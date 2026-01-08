@@ -2,10 +2,12 @@ import { prisma } from "@/lib/prisma";
 
 export async function GET(
   _req: Request,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
+  const { slug } = await params;
+
   const tour = await prisma.tour.findUnique({
-    where: { slug: params.slug },
+    where: { slug },
     include: {
       images: { orderBy: { order: "asc" } },
       program: { orderBy: { day: "asc" } },
