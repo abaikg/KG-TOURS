@@ -1,19 +1,23 @@
 import { prisma } from "@/lib/prisma";
 
-export async function GET() {
-  const tours = await prisma.tour.findMany({
-    orderBy: { createdAt: "desc" },
+export async function GET(
+  _req: Request,
+  { params }: { params: Promise<{ slug: string }> }
+) {
+  const { slug } = await params;
+
+  const tour = await prisma.tour.findUnique({
+    where: { slug },
     include: {
       images: { orderBy: { order: "asc" } },
       program: { orderBy: { day: "asc" } },
     },
   });
 
-  return Response.json(
-    tours.map((t: { images: Array<{ url: string }> }) => ({
-      ...t,
-      images: t.images.map((i: { url: string }) => i.url),
-    }))
-  );
-  
+  if (!tour) return new Response("Not found", { status: 404 });
+
+  return Response.json({
+    ...tour,
+    images: tour.images.map((i: { url: string }) => i.url),
+  });
 }

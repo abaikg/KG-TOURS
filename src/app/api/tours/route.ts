@@ -20,9 +20,9 @@ export async function GET() {
   });
 
   return Response.json(
-    tours.map((t) => ({
+    tours.map((t: { images: Array<{ url: string }> }) => ({
       ...t,
-      images: t.images.map((i) => i.url),
+      images: t.images.map((i: { url: string }) => i.url),
     }))
   );
 }
@@ -32,15 +32,6 @@ export async function POST(req: NextRequest) {
   if (auth) return auth;
 
   const body = await req.json();
-
-  // ожидаем:
-  // {
-  //  title, slug, days, price, shortDescription, region, difficulty,
-  //  images: string[],
-  //  program: [{day,title,description}],
-  //  included: string[],
-  //  notIncluded: string[]
-  // }
 
   const created = await prisma.tour.create({
     data: {
@@ -76,7 +67,7 @@ export async function POST(req: NextRequest) {
   return Response.json(
     {
       ...created,
-      images: created.images.map((i) => i.url),
+      images: created.images.map((i: { url: string }) => i.url),
     },
     { status: 201 }
   );
