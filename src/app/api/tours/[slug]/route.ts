@@ -1,12 +1,4 @@
 import { prisma } from "@/lib/prisma";
-import type { Prisma } from "@prisma/client";
-
-type TourWithImages = Prisma.TourGetPayload<{
-  include: {
-    images: true;
-    program: true;
-  };
-}>;
 
 export async function GET(
   _req: Request,
@@ -24,10 +16,8 @@ export async function GET(
 
   if (!tour) return new Response("Not found", { status: 404 });
 
-  const typedTour = tour as TourWithImages;
-
   return Response.json({
-    ...typedTour,
-    images: typedTour.images.map((i) => i.url),
+    ...tour,
+    images: tour.images.map((i: { url: string }) => i.url),
   });
 }
