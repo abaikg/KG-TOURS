@@ -15,4 +15,5 @@ export async function GET() {
       images: t.images.map((i: { url: string }) => i.url),
     }))
   );
+  
 }
