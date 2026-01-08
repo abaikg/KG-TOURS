@@ -1,77 +1,77 @@
-generator client {
-  provider = "prisma-client-js"
-}
+// generator client {
+//   provider = "prisma-client-js"
+// }
 
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
+// datasource db {
+//   provider = "postgresql"
+//   url      = env("DATABASE_URL")
+// }
 
-enum Difficulty {
-  EASY
-  MEDIUM
-  HARD
-}
+// enum Difficulty {
+//   EASY
+//   MEDIUM
+//   HARD
+// }
 
-model Tour {
-  id               Int         @id @default(autoincrement())
-  title            String
-  slug             String      @unique
-  days             Int
-  price            String
-  shortDescription String
-  region           String
-  difficulty       Difficulty
+// model Tour {
+//   id               Int         @id @default(autoincrement())
+//   title            String
+//   slug             String      @unique
+//   days             Int
+//   price            String
+//   shortDescription String
+//   region           String
+//   difficulty       Difficulty
 
-  images           TourImage[]
-  program          TourDay[]
-  included         String[]
-  notIncluded      String[]
+//   images           TourImage[]
+//   program          TourDay[]
+//   included         String[]
+//   notIncluded      String[]
 
-  createdAt        DateTime    @default(now())
-  updatedAt        DateTime    @updatedAt
-}
+//   createdAt        DateTime    @default(now())
+//   updatedAt        DateTime    @updatedAt
+// }
 
-model TourImage {
-  id        Int      @id @default(autoincrement())
-  url       String
-  order     Int      @default(0)
+// model TourImage {
+//   id        Int      @id @default(autoincrement())
+//   url       String
+//   order     Int      @default(0)
 
-  tourId    Int
-  tour      Tour     @relation(fields: [tourId], references: [id], onDelete: Cascade)
+//   tourId    Int
+//   tour      Tour     @relation(fields: [tourId], references: [id], onDelete: Cascade)
 
-  createdAt DateTime @default(now())
+//   createdAt DateTime @default(now())
 
-  @@index([tourId])
-  @@unique([tourId, order])
-}
+//   @@index([tourId])
+//   @@unique([tourId, order])
+// }
 
-model TourDay {
-  id          Int      @id @default(autoincrement())
-  day         Int
-  title       String
-  description String
+// model TourDay {
+//   id          Int      @id @default(autoincrement())
+//   day         Int
+//   title       String
+//   description String
 
-  tourId      Int
-  tour        Tour     @relation(fields: [tourId], references: [id], onDelete: Cascade)
+//   tourId      Int
+//   tour        Tour     @relation(fields: [tourId], references: [id], onDelete: Cascade)
 
-  createdAt   DateTime @default(now())
+//   createdAt   DateTime @default(now())
 
-  @@index([tourId])
-  @@unique([tourId, day])
-}
+//   @@index([tourId])
+//   @@unique([tourId, day])
+// }
 
-model Review {
-  id        Int      @id @default(autoincrement())
-  name      String
-  country   String?
-  rating    Int
-  text      String
-  avatarUrl String?
-  photoUrl  String?
+// model Review {
+//   id        Int      @id @default(autoincrement())
+//   name      String
+//   country   String?
+//   rating    Int
+//   text      String
+//   avatarUrl String?
+//   photoUrl  String?
 
-  createdAt DateTime @default(now())
-  isPublic  Boolean  @default(true)
+//   createdAt DateTime @default(now())
+//   isPublic  Boolean  @default(true)
 
-  @@index([isPublic, createdAt])
-}
+//   @@index([isPublic, createdAt])
+// }
