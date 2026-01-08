@@ -2,12 +2,8 @@
   "name": "kg-tours",
   "version": "0.1.0",
   "private": true,
-  "prisma": {
-    "seed": "tsx prisma/seed.ts"
-  },
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
     "prisma:generate": "prisma generate",
