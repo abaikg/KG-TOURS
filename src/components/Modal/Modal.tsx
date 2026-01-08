@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef } from "react";
+import React, { useEffect, useId, useRef } from "react";
 
 type Props = {
   isOpen: boolean;
@@ -17,10 +17,20 @@ export function Modal({ isOpen, title, onClose, children }: Props) {
   useEffect(() => {
     if (!isOpen) return;
 
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    // lock scroll + компенсация scrollbars (чтобы не прыгал контент)
+    const html = document.documentElement;
+    const body = document.body;
 
-    // focus on open
+    const prevHtmlOverflow = html.style.overflow;
+    const prevBodyOverflow = body.style.overflow;
+    const prevBodyPaddingRight = body.style.paddingRight;
+
+    const scrollBarWidth = window.innerWidth - html.clientWidth;
+    if (scrollBarWidth > 0) body.style.paddingRight = `${scrollBarWidth}px`;
+
+    html.style.overflow = "hidden";
+    body.style.overflow = "hidden";
+
     const t = window.setTimeout(() => {
       closeBtnRef.current?.focus();
     }, 0);
@@ -28,7 +38,7 @@ export function Modal({ isOpen, title, onClose, children }: Props) {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
 
-      // simple focus trap
+      // focus trap
       if (e.key === "Tab") {
         const root = dialogRef.current;
         if (!root) return;
@@ -37,7 +47,7 @@ export function Modal({ isOpen, title, onClose, children }: Props) {
           root.querySelectorAll<HTMLElement>(
             'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
           )
-        ).filter((el) => !el.hasAttribute("disabled") && !el.getAttribute("aria-hidden"));
+        ).filter((el) => !el.hasAttribute("disabled") && el.getAttribute("aria-hidden") !== "true");
 
         if (!focusables.length) return;
 
@@ -62,7 +72,9 @@ export function Modal({ isOpen, title, onClose, children }: Props) {
 
     return () => {
       window.clearTimeout(t);
-      document.body.style.overflow = prevOverflow;
+      html.style.overflow = prevHtmlOverflow;
+      body.style.overflow = prevBodyOverflow;
+      body.style.paddingRight = prevBodyPaddingRight;
       document.removeEventListener("keydown", onKeyDown);
     };
   }, [isOpen, onClose]);
@@ -70,16 +82,33 @@ export function Modal({ isOpen, title, onClose, children }: Props) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100]">
+    <div
+      className={[
+        "fixed inset-0 z-[100]",
+        // iOS/клавиатура: dvh важнее чем vh
+        "min-h-[100vh] min-h-[100dvh]",
+      ].join(" ")}
+    >
       {/* overlay */}
       <button
-        className="absolute inset-0 bg-black/55 backdrop-blur-[3px] transition-opacity animate-[fadeIn_.18s_ease-out]"
+        className="absolute inset-0 bg-black/55 backdrop-blur-[3px] animate-[fadeIn_.18s_ease-out]"
         onClick={onClose}
         aria-label="Закрыть"
       />
 
       {/* wrapper */}
-      <div className="absolute inset-0 flex items-end sm:items-center justify-center p-3 sm:p-6">
+      <div
+        className={[
+          "absolute inset-0 flex justify-center",
+          // mobile bottom-sheet
+          "items-end sm:items-center",
+          // на мобиле без боковых отступов, на desktop — с отступами
+          "p-0 sm:p-6",
+          // safe-area (iPhone)
+          "pb-[env(safe-area-inset-bottom)]",
+          "overscroll-contain",
+        ].join(" ")}
+      >
         {/* dialog */}
         <div
           ref={dialogRef}
@@ -87,26 +116,32 @@ export function Modal({ isOpen, title, onClose, children }: Props) {
           aria-modal="true"
           aria-labelledby={titleId}
           className={[
-            "w-full max-w-xl overflow-hidden bg-white",
+            // на мобиле: во всю ширину, как bottom sheet
+            "w-full sm:max-w-xl",
+            "bg-white overflow-hidden",
             "ring-1 ring-black/10 shadow-[0_30px_80px_rgba(17,24,39,0.22)]",
-            "rounded-[26px] sm:rounded-[28px]",
-            // mobile = bottom sheet
-            "sm:translate-y-0",
+
+            // bottom-sheet радиусы
+            "rounded-t-[26px] sm:rounded-[28px]",
+
+            // высота: чтобы влезало при клавиатуре
+            "flex flex-col min-h-0",
+            "max-h-[calc(100dvh-0rem)] sm:max-h-[calc(100dvh-3rem)]",
+
+            // анимация
             "animate-[modalUp_.22s_cubic-bezier(.2,.8,.2,1)]",
           ].join(" ")}
         >
-          {/* top handle for mobile */}
-          <div className="sm:hidden flex justify-center pt-3">
+          {/* handle */}
+          <div className="sm:hidden flex justify-center pt-3 shrink-0">
             <div className="h-1 w-12 rounded-full bg-black/10" />
           </div>
 
           {/* header */}
-          <div className="px-6 pt-5 pb-4 border-b border-black/5 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.04),transparent)]">
+          <div className="px-4 sm:px-6 pt-4 sm:pt-5 pb-3 sm:pb-4 border-b border-black/5 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.04),transparent)] shrink-0">
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0">
-                <div className="text-xs text-[color:var(--text-muted)]">
-                  Заявка
-                </div>
+                <div className="text-xs text-[color:var(--text-muted)]">Заявка</div>
                 <h2
                   id={titleId}
                   className="mt-1 text-lg sm:text-xl font-semibold text-gray-900 truncate"
@@ -119,7 +154,7 @@ export function Modal({ isOpen, title, onClose, children }: Props) {
                 ref={closeBtnRef}
                 onClick={onClose}
                 className={[
-                  "h-10 w-10 rounded-2xl",
+                  "h-10 w-10 rounded-2xl shrink-0",
                   "border border-black/10 bg-white",
                   "hover:bg-black/[0.04] transition active:scale-[0.98]",
                   "focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--brand)]/25",
@@ -132,8 +167,13 @@ export function Modal({ isOpen, title, onClose, children }: Props) {
             </div>
           </div>
 
-          {/* content */}
-          <div className="p-6">{children}</div>
+          {/* content (скролл внутри, чтобы кнопка не уходила за экран) */}
+          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 sm:px-6 py-4 sm:py-6">
+            {children}
+          </div>
+
+          {/* небольшой нижний отступ под safe-area, чтобы не прилипало */}
+          <div className="h-[env(safe-area-inset-bottom)] shrink-0" />
         </div>
       </div>
 

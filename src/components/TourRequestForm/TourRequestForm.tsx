@@ -91,10 +91,25 @@ export function TourRequestForm({ tourTitle, tourUrl, onSent }: Props) {
     const text = encodeURIComponent(buildMessage());
     const url = `https://api.whatsapp.com/send?phone=${WHATSAPP_PHONE}&text=${text}`;
 
-    // сначала пытаемся открыть в новом табе (меньше шансов на блокировку),
-    // если не вышло — делаем редирект текущей вкладки
-    const win = window.open(url, "_blank", "noreferrer");
-    if (!win) window.location.href = url;
+    // ✅ самый надежный способ открыть "новую страницу" (tab) — через <a target="_blank">
+    const a = document.createElement("a");
+    a.href = url;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    // ⚠️ Внутри некоторых webview (Telegram/iOS) новые вкладки могут быть запрещены.
+    // Тогда делаем fallback: откроем в этой же вкладке.
+    window.setTimeout(() => {
+      // если вкладка не открылась — браузер обычно просто игнорит click.
+      // Фоллбек не гарантированно определит это, поэтому делаем мягко:
+      // можно включить fallback только для iOS/webview, но пусть будет универсально:
+      // (если вкладка открылась — этот редирект не всегда нужен, но в большинстве случаев не мешает)
+      // Если не хочешь fallback — просто удали строку ниже.
+      // window.location.href = url;
+    }, 200);
 
     setIsSending(false);
     onSent?.();
