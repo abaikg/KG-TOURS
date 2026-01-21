@@ -1,17 +1,25 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { reviews as allReviews } from "@/data/reviews";
+import { useEffect, useState } from "react";
+// import { reviews as allReviews } from "@/data/reviews"; // legacy
+
+interface Review {
+  id: string;
+  name: string;
+  rating: number;
+  comment: string;
+}
 
 type Props = {
   title?: string;
+  reviews?: Review[];
 };
 
 function Stars({ rating }: { rating: number }) {
   return (
-    <div className="flex items-center gap-1" aria-label={`Рейтинг ${rating} из 5`}>
+    <div className="flex items-center gap-1" aria-label={`Rating ${rating} out of 5`}>
       {Array.from({ length: 5 }).map((_, i) => (
-        <span key={i} className={i < rating ? "text-primary" : "text-black/15"}>
+        <span key={i} className={i < rating ? "text-yellow-500" : "text-gray-300"}>
           ★
         </span>
       ))}
@@ -19,17 +27,28 @@ function Stars({ rating }: { rating: number }) {
   );
 }
 
-export function ReviewsCarousel({ title = "Отзывы" }: Props) {
-  const reviews = useMemo(() => allReviews, []);
+export function ReviewsCarousel({ title = "Reviews", reviews = [] }: Props) {
+  // const reviews = useMemo(() => allReviews, []);
   const [index, setIndex] = useState(0);
 
-  // автопрокрутка
+  // auto scroll
   useEffect(() => {
+    if (reviews.length === 0) return;
     const t = setInterval(() => {
       setIndex((prev) => (prev + 1) % reviews.length);
     }, 4500);
     return () => clearInterval(t);
   }, [reviews.length]);
+
+  if (reviews.length === 0) {
+    return (
+      <section id="reviews" className="mx-auto max-w-6xl px-4 pb-12">
+        <div className="text-center text-gray-500">
+          No reviews yet.
+        </div>
+      </section>
+    )
+  }
 
   const current = reviews[index];
 
@@ -39,12 +58,12 @@ export function ReviewsCarousel({ title = "Отзывы" }: Props) {
         <div className="p-6 md:p-10">
           <div className="flex items-end justify-between gap-4">
             <div>
-              <div className="text-sm text-grayText">Доверие</div>
+              <div className="text-sm text-grayText">Feedback</div>
               <h2 className="mt-1 text-2xl md:text-3xl font-bold text-gray-900">
                 {title}
               </h2>
               <p className="mt-2 text-grayText">
-                Реальные впечатления туристов (пример, потом заменим на ваши).
+                Real impressions from tourists.
               </p>
             </div>
 
@@ -52,14 +71,14 @@ export function ReviewsCarousel({ title = "Отзывы" }: Props) {
               <button
                 onClick={() => setIndex((i) => (i - 1 + reviews.length) % reviews.length)}
                 className="h-11 w-11 rounded-2xl border border-black/10 hover:bg-black/5 transition active:scale-[0.98]"
-                aria-label="Назад"
+                aria-label="Back"
               >
                 ←
               </button>
               <button
                 onClick={() => setIndex((i) => (i + 1) % reviews.length)}
                 className="h-11 w-11 rounded-2xl border border-black/10 hover:bg-black/5 transition active:scale-[0.98]"
-                aria-label="Вперёд"
+                aria-label="Next"
               >
                 →
               </button>
@@ -67,16 +86,16 @@ export function ReviewsCarousel({ title = "Отзывы" }: Props) {
           </div>
 
           <div className="mt-6 grid md:grid-cols-5 gap-6 items-stretch">
-            {/* карточка */}
+            {/* Card */}
             <div className="md:col-span-3 rounded-3xl border border-black/10 bg-gradient-to-b from-black/[0.03] to-transparent p-6">
               <Stars rating={current.rating} />
               <p className="mt-4 text-gray-900 text-lg leading-relaxed">
-                “{current.text}”
+                “{current.comment}”
               </p>
               <div className="mt-5 flex items-center justify-between gap-4">
                 <div>
                   <div className="font-semibold text-gray-900">{current.name}</div>
-                  <div className="text-sm text-grayText">{current.country}</div>
+                  {/* Country removed as it's not in schema */}
                 </div>
 
                 <div className="flex gap-2 md:hidden">
@@ -85,14 +104,14 @@ export function ReviewsCarousel({ title = "Отзывы" }: Props) {
                       setIndex((i) => (i - 1 + reviews.length) % reviews.length)
                     }
                     className="h-10 w-10 rounded-2xl border border-black/10 hover:bg-black/5 transition active:scale-[0.98]"
-                    aria-label="Назад"
+                    aria-label="Back"
                   >
                     ←
                   </button>
                   <button
                     onClick={() => setIndex((i) => (i + 1) % reviews.length)}
                     className="h-10 w-10 rounded-2xl border border-black/10 hover:bg-black/5 transition active:scale-[0.98]"
-                    aria-label="Вперёд"
+                    aria-label="Next"
                   >
                     →
                   </button>
@@ -100,9 +119,9 @@ export function ReviewsCarousel({ title = "Отзывы" }: Props) {
               </div>
             </div>
 
-            {/* точки */}
+            {/* Dots / Navigation */}
             <div className="md:col-span-2 rounded-3xl border border-black/10 p-6">
-              <div className="text-sm text-grayText">Все отзывы</div>
+              <div className="text-sm text-grayText">All Reviews</div>
               <div className="mt-4 flex flex-wrap gap-2">
                 {reviews.map((r, i) => (
                   <button
@@ -111,17 +130,13 @@ export function ReviewsCarousel({ title = "Отзывы" }: Props) {
                     className={[
                       "px-3 py-2 rounded-2xl border transition text-sm",
                       i === index
-                        ? "border-primary/30 bg-primary/10 text-primary"
+                        ? "border-blue-500/30 bg-blue-500/10 text-blue-600"
                         : "border-black/10 hover:bg-black/5 text-gray-900",
                     ].join(" ")}
                   >
                     {r.name}
                   </button>
                 ))}
-              </div>
-
-              <div className="mt-6 text-xs text-grayText">
-                Позже подключим админку — и вы будете добавлять отзывы сами.
               </div>
             </div>
           </div>

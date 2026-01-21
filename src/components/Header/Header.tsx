@@ -1,260 +1,172 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
+import { useState } from "react";
 import { usePathname } from "next/navigation";
-import { WHATSAPP_PHONE } from "@/config/site";
-
-type NavItem = { label: string; href: string; key: string; icon?: string };
+import { useLanguage } from "@/lib/useLanguage";
+import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
 
 export function Header() {
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
-  const [active, setActive] = useState<string>("tours");
-  const [mounted, setMounted] = useState(false);
-  const [elevated, setElevated] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { language, setLanguage, t } = useLanguage();
 
-  const nav: NavItem[] = useMemo(
-    () => [
-      { label: "Туры", href: "/#tours", key: "tours", icon: "🧭" },
-      { label: "О нас", href: "/#about", key: "about", icon: "🌿" },
-      { label: "Отзывы", href: "/#reviews", key: "reviews", icon: "⭐" },
-      { label: "Контакты", href: "/#contacts", key: "contacts", icon: "📞" },
-    ],
-    []
-  );
-
-  const waText = useMemo(
-    () => encodeURIComponent("Здравствуйте! Хочу подобрать тур по Кыргызстану."),
-    []
-  );
-
-  const waLink = useMemo(
-    () => `https://api.whatsapp.com/send?phone=${WHATSAPP_PHONE}&text=${waText}`,
-    [waText]
-  );
-
-  // Shadow on scroll (premium feel)
-  useEffect(() => {
-    const onScroll = () => setElevated(window.scrollY > 6);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  // Lock scroll + mount animation
-  useEffect(() => {
-    if (open) {
-      setMounted(true);
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-      const t = window.setTimeout(() => setMounted(false), 180);
-      return () => window.clearTimeout(t);
-    }
-  }, [open]);
-
-  // Esc closes
-  useEffect(() => {
-    if (!open) return;
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
-    };
-    document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
-  }, [open]);
-
-  // Active section highlight on home
-  useEffect(() => {
-    if (pathname !== "/") return;
-
-    const ids = ["tours", "about", "reviews", "contacts"];
-    const els = ids
-      .map((id) => document.getElementById(id))
-      .filter(Boolean) as HTMLElement[];
-
-    if (!els.length) return;
-
-    const obs = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort(
-            (a, b) => (b.intersectionRatio ?? 0) - (a.intersectionRatio ?? 0)
-          )[0];
-
-        if (visible?.target?.id) setActive(visible.target.id);
-      },
-      { threshold: [0.25, 0.4, 0.6], rootMargin: "-12% 0px -72% 0px" }
-    );
-
-    els.forEach((el) => obs.observe(el));
-    return () => obs.disconnect();
-  }, [pathname]);
+  const nav = [
+    { label: t("Туры", "Tours"), href: "/tours" },
+    { label: t("О нас", "About"), href: "/about" },
+    { label: t("Отзывы", "Reviews"), href: "/reviews" },
+    { label: t("Контакты", "Contacts"), href: "/contacts" },
+  ];
 
   return (
-    <header className="sticky top-0 z-50">
-      {/* glass bar: LOGO + BURGER ONLY */}
-      <div
-        className={[
-          "bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/70",
-          "border-b border-black/5",
-          elevated ? "shadow-[0_10px_30px_rgba(17,24,39,0.08)]" : "",
-        ].join(" ")}
-      >
-        <div className="container-x">
-          <div className="h-16 flex items-center justify-between">
-            <Link
-              href="/"
-              className="rounded-2xl ring-brand"
-              aria-label="На главную"
-              title="На главную"
-            >
+    <header className="sticky top-0 z-50 bg-cream/95 backdrop-blur-lg border-b border-sage-200/50 shadow-sm">
+      <div className="container-x mx-auto">
+        <div className="flex items-center justify-between h-20">
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-3 group">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-forest-800 to-forest-900 flex items-center justify-center overflow-hidden shadow-lg group-hover:scale-105 transition-transform">
               <Image
-                src="/logo-ayan.webp"
+                src="/logo.webp"
                 alt="KG Tours"
-                width={300}
-                height={60}
-                priority
-                className="h-14 w-auto max-w-[300px] object-contain"
+                width={48}
+                height={48}
+                className="object-cover"
               />
-            </Link>
-
-            <button
-              type="button"
-              onClick={() => setOpen(true)}
-              className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-black/10 bg-white
-                         hover:bg-black/[0.04] transition active:scale-[0.98] ring-brand"
-              aria-label="Открыть меню"
-              aria-expanded={open}
-              aria-controls="mobile-drawer"
-              title="Меню"
-            >
-              ☰
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Drawer */}
-      {mounted && (
-        <div className="fixed inset-0 z-[60]">
-          {/* overlay */}
-          <button
-            className={[
-              "absolute inset-0 bg-black/50 backdrop-blur-[2px] transition-opacity duration-200",
-              open ? "opacity-100" : "opacity-0",
-            ].join(" ")}
-            onClick={() => setOpen(false)}
-            aria-label="Закрыть меню"
-          />
-
-          <div
-            id="mobile-drawer"
-            role="dialog"
-            aria-modal="true"
-            className={[
-              "absolute right-0 top-0 h-full w-[92%] max-w-[420px] bg-white",
-              "border-l border-black/10 shadow-2xl",
-              "transition-transform duration-200 will-change-transform",
-              open ? "translate-x-0" : "translate-x-full",
-            ].join(" ")}
-          >
-            {/* top */}
-            <div className="h-16 px-4 border-b border-black/5 flex items-center justify-between">
-              <div className="min-w-0">
-                <div className="font-semibold text-gray-900 truncate">Меню</div>
-                <div className="text-xs text-[color:var(--text-muted)] truncate">
-                  Быстрый переход по разделам
-                </div>
-              </div>
-
-              <button
-                className="h-11 w-11 rounded-2xl border border-black/10 hover:bg-black/[0.04] transition active:scale-[0.98] ring-brand"
-                onClick={() => setOpen(false)}
-                aria-label="Закрыть"
-                title="Закрыть"
-              >
-                ✕
-              </button>
             </div>
+            <div className="hidden sm:block">
+              <div className="text-xl font-extrabold text-forest-900 tracking-tight">KG TOURS</div>
+              <div className="text-[10px] font-medium text-forest-700 uppercase tracking-wider">{t("Путешествия по Кыргызстану", "Travel in Kyrgyzstan")}</div>
+            </div>
+          </Link>
 
-            <div className="px-4 py-5">
-              {/* nav links */}
-              <div className="rounded-3xl border border-black/10 bg-white p-2">
-                <div className="grid gap-1">
-                  {nav.map((item) => {
-                    const isActive = pathname === "/" && active === item.key;
-                    return (
-                      <Link
-                        key={item.key}
-                        href={item.href}
-                        onClick={() => setOpen(false)}
-                        className={[
-                          "flex items-center gap-3 rounded-2xl px-4 py-3 transition",
-                          "hover:bg-black/[0.04] active:scale-[0.99] ring-brand",
-                          isActive
-                            ? "bg-[var(--brand)]/10 text-gray-900"
-                            : "text-gray-900",
-                        ].join(" ")}
-                      >
-                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-black/[0.04]">
-                          {item.icon ?? "•"}
-                        </span>
-                        <div className="flex-1">
-                          <div className="font-semibold">{item.label}</div>
-                          <div className="text-xs text-[color:var(--text-muted)]">
-                            Перейти к разделу
-                          </div>
-                        </div>
-                        <span className="text-gray-400">›</span>
-                      </Link>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* CTA */}
-              <div className="mt-4 grid gap-2">
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center gap-8">
+            {nav.map((item) => {
+              const isActive = pathname === item.href;
+              return (
                 <Link
-                  href="/#tours"
-                  onClick={() => setOpen(false)}
-                  className="w-full btn btn-primary ring-brand"
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "font-bold text-sm uppercase tracking-wide transition-all relative py-2",
+                    isActive
+                      ? "text-forest-900"
+                      : "text-forest-700/80 hover:text-forest-900"
+                  )}
                 >
-                  Подобрать тур
+                  {item.label}
+                  {isActive && (
+                    <motion.span
+                      layoutId="header-nav-active"
+                      className="absolute bottom-0 left-0 right-0 h-1 bg-forest-900 rounded-full"
+                      transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                    />
+                  )}
                 </Link>
+              );
+            })}
+          </nav>
 
-                <a
-                  href={waLink}
-                  target="_blank"
-                  rel="noreferrer"
-                  onClick={() => setOpen(false)}
-                  className="w-full btn btn-secondary ring-brand"
-                >
-                  Написать в WhatsApp
-                </a>
-              </div>
-
-              <div className="mt-3 text-xs text-[color:var(--text-muted)]">
-                Телефон:{" "}
-                <span className="text-gray-900 font-medium">
-                  +{WHATSAPP_PHONE}
-                </span>
-              </div>
-
-              <div className="mt-5 rounded-2xl border border-black/10 bg-black/[0.03] p-4">
-                <div className="text-xs text-[color:var(--text-muted)]">
-                  Быстро
-                </div>
-                <div className="mt-1 text-sm font-medium text-gray-900">
-                  Напишите — подберём тур под ваш бюджет и даты.
-                </div>
-              </div>
-            </div>
+          {/* Actions */}
+          <div className="hidden md:flex items-center gap-4">
+            <button
+              onClick={() => setLanguage(language === "ru" ? "en" : "ru")}
+              className="px-4 py-2 rounded-pill border-2 border-sage-400 hover:border-forest-700 transition-colors font-semibold text-sm uppercase text-forest-800"
+            >
+              {language}
+            </button>
+            <Link href="/tours">
+              <button className="btn-nature-primary text-sm px-6 py-3">
+                {t("Подобрать тур", "Find Tour")}
+              </button>
+            </Link>
           </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden p-2 rounded-lg hover:bg-sage-100 transition-colors"
+          >
+            <svg
+              className="w-6 h-6 text-forest-900"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              {mobileMenuOpen ? (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              ) : (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              )}
+            </svg>
+          </button>
         </div>
-      )}
+
+        {/* Mobile Menu */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              className="md:hidden overflow-hidden border-t border-sage-200"
+            >
+              <div className="py-4 flex flex-col gap-2">
+                {nav.map((item, i) => (
+                  <motion.div
+                    key={item.href}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.05 }}
+                  >
+                    <Link
+                      href={item.href}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={cn(
+                        "px-4 py-3 rounded-xl font-bold transition-all",
+                        pathname === item.href
+                          ? "bg-sage-200 text-forest-900"
+                          : "text-forest-700 hover:bg-sage-100"
+                      )}
+                    >
+                      {item.label}
+                    </Link>
+                  </motion.div>
+                ))}
+              </div>
+              <div className="mt-4 pb-6 px-4 flex flex-col gap-3">
+                <button
+                  onClick={() => {
+                    setLanguage(language === "ru" ? "en" : "ru");
+                    setMobileMenuOpen(false);
+                  }}
+                  className="w-full px-4 py-3 rounded-pill border-2 border-sage-400 hover:border-forest-700 transition-colors font-bold text-sm uppercase text-forest-800"
+                >
+                  {language === "ru" ? "Switch to EN" : "Переключить на RU"}
+                </button>
+                <Link href="/tours" onClick={() => setMobileMenuOpen(false)}>
+                  <button className="btn-nature-primary w-full shadow-soft hover:shadow-card">
+                    {t("Подобрать тур", "Find Tour")}
+                  </button>
+                </Link>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </header>
   );
 }

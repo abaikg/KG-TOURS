@@ -1,0 +1,115 @@
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  reviews   Review[]
+  bookings  Booking[]
+}
+
+model Tour {
+  id               String    @id @default(cuid())
+  slug             String    @unique
+  
+  // RU Content
+  title_ru         String
+  description_ru   String    @db.Text
+  shortDescription_ru String @db.Text
+  location_ru      String
+  program_ru       Json      // [{ day: 1, title: "...", description: "..." }]
+  included_ru      String[]
+  notIncluded_ru   String[]
+  highlights_ru    String[]
+  
+  // EN Content
+  title_en         String?
+  description_en   String?   @db.Text
+  shortDescription_en String? @db.Text
+  location_en      String?
+  program_en       Json?
+  included_en      String[]
+  notIncluded_en   String[]
+  highlights_en    String[]
+
+  // Common
+  price            Float
+  currency         String    @default("USD")
+  duration         Int       // in days
+  images           String[]
+  difficulty       String    // "easy", "medium", "hard"
+  minGroupSize     Int       @default(1)
+  
+  isPublished      Boolean   @default(true)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  
+  reviews          Review[]
+  bookings         Booking[]
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int
+  
+  text_ru   String?  @db.Text
+  text_en   String?  @db.Text
+  
+  authorName String
+  
+  createdAt DateTime @default(now())
+  status    ReviewStatus @default(PENDING)
+  
+  tourId    String
+  tour      Tour     @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+}
+
+model Booking {
+  id           String   @id @default(cuid())
+  tourId       String
+  tour         Tour     @relation(fields: [tourId], references: [id])
+  userId       String?
+  user         User?    @relation(fields: [userId], references: [id])
+  
+  customerName String
+  email        String
+  phone        String
+  peopleCount  Int      @default(1)
+  date         DateTime
+  comment      String?
+  
+  status       BookingStatus @default(PENDING)
+  createdAt    DateTime @default(now())
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
