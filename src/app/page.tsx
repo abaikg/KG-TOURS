@@ -1,10 +1,13 @@
 import { prisma } from '@/lib/prisma';
-import { HomeContent } from '@/components/Home/HomeContent';
 import { Header } from '@/components/Header/Header';
 import { Footer } from '@/components/Footer/Footer';
 import { BottomNav } from '@/components/ui/BottomNav';
+import { HomeContent } from '@/components/Home/HomeContent';
+import { HomeSkeleton } from '@/components/Home/HomeSkeleton';
 import { siteConfig } from '@/config/site';
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
+import type { HomeTour, HomeReview } from '@/types/home';
 
 export const metadata: Metadata = {
   title: siteConfig.title,
@@ -21,14 +24,7 @@ export const metadata: Metadata = {
     title: siteConfig.title,
     description: siteConfig.description,
     siteName: siteConfig.name,
-    images: [
-      {
-        url: siteConfig.ogImage,
-        width: 1200,
-        height: 630,
-        alt: siteConfig.name,
-      },
-    ],
+    images: [{ url: siteConfig.ogImage, width: 1200, height: 630 }],
   },
   twitter: {
     card: 'summary_large_image',
@@ -36,57 +32,73 @@ export const metadata: Metadata = {
     description: siteConfig.description,
     images: [siteConfig.ogImage],
   },
-  robots: {
-    index: true,
-    follow: true,
-  },
 };
-
 
 export const dynamic = 'force-dynamic';
 
-export default async function HomePage() {
-  let tours: any[] = [];
-  let reviews: any[] = [];
-
+async function getHomeData(): Promise<{
+  tours: HomeTour[];
+  reviews: HomeReview[];
+}> {
   try {
-    tours = await prisma.tour.findMany({
-      where: { isPublished: true },
-      orderBy: { createdAt: 'desc' },
-      take: 6,
-    });
+    const [tours, reviews] = await Promise.all([
+      prisma.tour.findMany({
+        where: { isPublished: true },
+        orderBy: { createdAt: 'desc' },
+        take: 6,
+      }),
+      prisma.review.findMany({
+        where: { status: 'APPROVED' },
+        orderBy: { createdAt: 'desc' },
+        take: 6,
+      }),
+    ]);
 
-    reviews = await prisma.review.findMany({
-      where: { status: 'APPROVED' },
-      take: 6,
-      orderBy: { createdAt: 'desc' },
-    });
+    return { tours, reviews };
   } catch (e) {
-    console.error("Home page DB fetch error:", e);
-    // Fallback data for design evaluation when DB is down
-    tours = [
-      {
-        id: '1', slug: 'demo-tour', price: 500, duration: 7, difficulty: 'medium',
-        title_ru: 'Демо-тур по Кыргызстану', title_en: 'Demo Tour Kyrgyzstan',
-        shortDescription_ru: 'Пример тура для предварительного просмотра дизайна. База данных сейчас недоступна.',
-        shortDescription_en: 'Example tour for design preview. Database is currently offline.',
-        images: ['/hero/kyrgyzstan-hero.webp']
-      }
-    ];
-    reviews = [
-      {
-        id: '1', userName: 'Traveler', rating: 5, status: 'APPROVED',
-        comment: 'Design is great! (This is fallback review data)',
-        createdAt: new Date().toISOString()
-      }
-    ];
-  }
+    console.error('Home fetch error:', e);
 
+    return {
+      tours: [
+        {
+          id: 'demo',
+          slug: 'demo-tour',
+          price: 500,
+          duration: 7,
+          difficulty: 'medium',
+          title_ru: 'Демо-тур по Кыргызстану',
+          title_en: 'Demo Tour Kyrgyzstan',
+          shortDescription_ru: 'Пример тура (fallback)',
+          shortDescription_en: 'Example tour (fallback)',
+          images: ['/hero/kyrgyzstan-hero.webp'],
+        },
+      ],
+      reviews: [
+        {
+          id: 'demo',
+          userName: 'Traveler',
+          rating: 5,
+          comment: 'Great design!',
+          createdAt: new Date().toISOString(),
+        },
+      ],
+    };
+  }
+}
+
+async function HomeData() {
+  const { tours, reviews } = await getHomeData();
+  return <HomeContent tours={tours} reviews={reviews} />;
+}
+
+export default function HomePage() {
   return (
     <>
       <Header />
       <main className="min-h-screen">
-        <HomeContent tours={tours} reviews={reviews} />
+        <Suspense fallback={<HomeSkeleton />}>
+          <HomeData />
+        </Suspense>
       </main>
       <Footer />
       <BottomNav />

@@ -86,3 +86,4 @@ export const BookingSchema = z.object({
 });
 
 export type BookingInput = z.infer<typeof BookingSchema>;
+

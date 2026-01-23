@@ -1,7 +1,10 @@
 @import "tailwindcss";
 
+/* =========================
+   THEME TOKENS
+========================= */
 @theme {
-  /* Nature-Inspired Color Palette */
+  /* Nature Palette */
   --color-sage-50: #F5F7F5;
   --color-sage-100: #E8EDE8;
   --color-sage-200: #D4E4D4;
@@ -21,33 +24,28 @@
   --color-amber: #FFB84D;
 
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-
-  /* Premium Animations */
-  @keyframes shimmer {
-    0% {
-      transform: translateX(-100%);
-    }
-
-    100% {
-      transform: translateX(100%);
-    }
-  }
 }
 
-/* Base Styles */
+/* =========================
+   BASE STYLES
+========================= */
 * {
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  color: #2C3E3B;
-  background: #FDFCFA;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
   margin: 0;
   padding: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: #FDFCFA;
+  color: #2C3E3B;
   line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
 h1,
@@ -64,20 +62,30 @@ p {
   line-height: 1.75;
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
 /* Selection */
 ::selection {
   background: rgba(127, 168, 127, 0.3);
   color: #0F2419;
 }
 
-/* Nature-Inspired UI Utilities */
+/* =========================
+   ANIMATIONS
+========================= */
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* =========================
+   UTILITIES
+========================= */
 @layer utilities {
 
-  /* Cards */
+  /* -------- Cards -------- */
   .nature-card {
     background: linear-gradient(180deg, #FFFFFF 0%, #FDFCFA 100%);
     border-radius: 24px;
@@ -89,198 +97,105 @@ html {
   }
 
   .nature-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(168, 191, 168, 0.4);
     box-shadow:
       0 8px 24px rgba(0, 0, 0, 0.06),
       0 16px 48px rgba(0, 0, 0, 0.1);
-    transform: translateY(-6px);
-    border-color: rgba(168, 191, 168, 0.4);
   }
 
-  .nature-card-lg {
-    background: linear-gradient(180deg, #FFFFFF 0%, #FDFCFA 100%);
-    border-radius: 32px;
-    border: 1px solid rgba(168, 191, 168, 0.2);
-    box-shadow:
-      0 8px 32px rgba(0, 0, 0, 0.06),
-      0 16px 48px rgba(0, 0, 0, 0.1);
-  }
-
-  .nature-card-image {
-    border-radius: 24px;
-    overflow: hidden;
-    position: relative;
-    border: 1px solid rgba(168, 191, 168, 0.15);
-  }
-
-  /* Buttons */
+  /* -------- Buttons -------- */
   .btn-nature-primary {
-    @apply relative flex items-center justify-center gap-2 rounded-xl font-bold transition-all duration-200 ease-out active:scale-[0.985] focus:ring-2 focus:ring-forest-800/20 disabled:opacity-40;
+    @apply flex items-center justify-center gap-2 rounded-xl font-bold transition-all duration-200 active:scale-[0.985];
     background: #1A3A2E;
     color: #FFFFFF;
     box-shadow: 0 4px 12px rgba(26, 58, 46, 0.15);
   }
 
   .btn-nature-primary:hover {
-    @apply brightness-110 -translate-y-[1px];
+    filter: brightness(1.1);
+    transform: translateY(-1px);
     box-shadow: 0 8px 20px rgba(26, 58, 46, 0.25);
   }
 
-  .btn-nature-secondary {
-    @apply relative flex items-center justify-center gap-2 rounded-xl font-bold transition-all duration-200 ease-out active:scale-[0.985] focus:ring-2 focus:ring-sage-200;
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(168, 191, 168, 0.3);
-    color: #1A3A2E;
-  }
+  /* =========================
+     ✅ SKELETON SYSTEM
+  ========================= */
 
-  .btn-nature-secondary:hover {
-    @apply bg-white border-sage-400 -translate-y-[1px];
-  }
-
-  /* Pills / Tags */
-  .pill {
-    background: #FFFFFF;
-    border: 1px solid rgba(168, 191, 168, 0.4);
-    border-radius: 12px;
-    padding: 8px 20px;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-
-  .pill:hover {
-    border-color: #2D5F4D;
-  }
-
-  .pill-active {
-    background: #1A3A2E;
-    color: #FFFFFF;
-    border-color: #1A3A2E;
-  }
-
-  .pill-sm {
-    padding: 6px 16px;
-    font-size: 11px;
-  }
-
-  .pill-info {
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 10px;
-    padding: 6px 14px;
-    font-size: 12px;
-    font-weight: 700;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  /* Inputs */
-  .nature-input {
-    background: #FFFFFF;
-    border: 2px solid #A8BFA8;
-    border-radius: 16px;
-    padding: 14px 20px;
-    color: #2C3E3B;
-    transition: all 0.2s ease;
-    width: 100%;
-    font-size: 16px;
-  }
-
-  .nature-input:focus {
-    outline: none;
-    border-color: #2D5F4D;
-    box-shadow: 0 0 0 4px rgba(45, 95, 77, 0.1);
-  }
-
-  .nature-input::placeholder {
-    color: #A8BFA8;
-  }
-
-  /* Glass Effect */
-  .glass-overlay {
-    background: linear-gradient(180deg, transparent 0%, rgba(15, 36, 25, 0.8) 100%);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-  }
-
-  .glass-light {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-  }
-
-  /* Chips */
-  .chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 14px;
-    border-radius: 10px;
-    font-size: 11px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    background: rgba(255, 255, 255, 0.9);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  }
-
-  /* Bottom Navigation */
-  .bottom-nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: #0F2419;
-    border-radius: 24px 24px 0 0;
-    padding: 12px 16px 20px;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
-    z-index: 50;
-  }
-
-  /* Skeleton & Shimmer */
+  /* Base skeleton */
   .skeleton {
-    @apply relative overflow-hidden bg-white/5 backdrop-blur-[2px] ring-1 ring-white/10;
+    position: relative;
+    overflow: hidden;
+    border-radius: 16px;
+
+    background: linear-gradient(
+      100deg,
+      rgba(168, 191, 168, 0.15) 40%,
+      rgba(168, 191, 168, 0.28) 50%,
+      rgba(168, 191, 168, 0.15) 60%
+    );
+
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.6s ease-in-out infinite;
   }
 
-  .skeleton::after {
-    @apply absolute inset-0;
-    content: "";
-    background: linear-gradient(90deg,
-        transparent,
-        rgba(255, 255, 255, 0.05),
-        transparent);
-    animation: shimmer 2s infinite;
+  /* Glass / Dark variant */
+  .skeleton-glass {
+    position: relative;
+    overflow: hidden;
+    border-radius: 16px;
+
+    background: linear-gradient(
+      100deg,
+      rgba(255, 255, 255, 0.06) 40%,
+      rgba(255, 255, 255, 0.12) 50%,
+      rgba(255, 255, 255, 0.06) 60%
+    );
+
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.6s ease-in-out infinite;
   }
 
-  .star {
-    color: #F4C430;
-    font-size: 16px;
+  /* Shape presets */
+  .skeleton-text {
+    height: 1em;
+    width: 100%;
+  }
+
+  .skeleton-title {
+    height: 1.6em;
+    width: 60%;
+  }
+
+  .skeleton-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 9999px;
+  }
+
+  .skeleton-button {
+    height: 44px;
+    width: 140px;
+    border-radius: 14px;
   }
 }
 
-/* Container */
+/* =========================
+   CONTAINER
+========================= */
 .container-x {
   width: 100%;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 16px;
-  padding-right: 16px;
+  margin-inline: auto;
+  padding-inline: 16px;
 }
 
 @media (min-width: 640px) {
   .container-x {
     max-width: 640px;
-    padding-left: 24px;
-    padding-right: 24px;
+    padding-inline: 24px;
   }
 }
 
