@@ -7,6 +7,8 @@ import { notFound } from 'next/navigation';
 import { siteConfig } from '@/config/site';
 import type { Metadata } from 'next';
 
+import { CTASection } from '@/components/ui/CTASection';
+
 export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
@@ -105,6 +107,7 @@ export default async function TourPage({ params }: { params: Promise<{ slug: str
       <Header />
       <main className="min-h-screen">
         <TourDetails tour={tour} reviews={reviews} />
+        <CTASection />
       </main>
       <Footer />
       <BottomNav />

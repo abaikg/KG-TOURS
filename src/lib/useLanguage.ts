@@ -5,7 +5,9 @@ type Language = 'ru' | 'en';
 
 interface LanguageState {
     language: Language;
+    hasHydrated: boolean;
     setLanguage: (lang: Language) => void;
+    setHasHydrated: (val: boolean) => void;
     t: (ru: string, en: string) => string;
 }
 
@@ -13,11 +15,20 @@ export const useLanguage = create<LanguageState>()(
     persist(
         (set, get) => ({
             language: 'ru',
+            hasHydrated: false,
             setLanguage: (lang) => set({ language: lang }),
-            t: (ru, en) => (get().language === 'ru' ? ru : en),
+            setHasHydrated: (val) => set({ hasHydrated: val }),
+            t: (ru, en) => {
+                // Always return RU on server or before hydration to match server render
+                if (!get().hasHydrated) return ru;
+                return get().language === 'ru' ? ru : en;
+            },
         }),
         {
             name: 'language-storage',
+            onRehydrateStorage: () => (state) => {
+                state?.setHasHydrated(true);
+            },
         }
     )
 );

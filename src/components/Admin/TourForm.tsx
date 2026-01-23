@@ -78,9 +78,9 @@ export default function TourForm({ initialData, isEdit = false }: TourFormProps)
     };
 
     const addDay = (lang: Lang) => {
-        const key = `program_${lang}` as keyof TourInput;
         // @ts-ignore
         const prev = formData[key] || [];
+        // @ts-ignore
         updateField(key, [...prev, { day: prev.length + 1, title: '', description: '' }]);
     };
 
@@ -88,6 +88,7 @@ export default function TourForm({ initialData, isEdit = false }: TourFormProps)
         const key = `program_${lang}` as keyof TourInput;
         // @ts-ignore
         const prev = formData[key] || [];
+        // @ts-ignore
         updateField(key, prev.filter((_, i) => i !== idx).map((d: any, i: number) => ({ ...d, day: i + 1 })));
     };
 
@@ -126,129 +127,160 @@ export default function TourForm({ initialData, isEdit = false }: TourFormProps)
 
     return (
         <form onSubmit={handleSubmit} className="space-y-8 pb-20">
-            <div className="flex gap-4 border-b border-white/10 pb-4">
+            <div className="flex gap-2 p-1 bg-white/5 border border-white/10 rounded-2xl w-fit backdrop-blur-md">
                 <button type="button" onClick={() => setActiveLang('ru')}
-                    className={cn("px-4 py-2 rounded-lg font-bold transition", activeLang === 'ru' ? "bg-primary text-white" : "text-slate-400 hover:text-white")}>
-                    🇷🇺 Russian (Main)
+                    className={cn("px-8 py-3 rounded-xl font-bold transition-all uppercase tracking-widest text-xs", activeLang === 'ru' ? "bg-white text-forest-900 shadow-xl" : "text-slate-400 hover:text-white")}>
+                    🇷🇺 Русский
                 </button>
                 <button type="button" onClick={() => setActiveLang('en')}
-                    className={cn("px-4 py-2 rounded-lg font-bold transition", activeLang === 'en' ? "bg-primary text-white" : "text-slate-400 hover:text-white")}>
+                    className={cn("px-8 py-3 rounded-xl font-bold transition-all uppercase tracking-widest text-xs", activeLang === 'en' ? "bg-white text-forest-900 shadow-xl" : "text-slate-400 hover:text-white")}>
                     🇬🇧 English
                 </button>
             </div>
 
             {/* Common Fields */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <Input label="Slug (URL)" value={formData.slug} onChange={e => updateField('slug', e.target.value)} error={validationErrors?.slug?.[0]} />
-                <Input label="Price ($)" type="number" value={formData.price} onChange={e => updateField('price', Number(e.target.value))} error={validationErrors?.price?.[0]} />
-                <Input label="Duration (Days)" type="number" value={formData.duration} onChange={e => updateField('duration', Number(e.target.value))} error={validationErrors?.duration?.[0]} />
-                <Input label="Min Group Size" type="number" value={formData.minGroupSize} onChange={e => updateField('minGroupSize', Number(e.target.value))} />
-                <div><label className="text-white text-sm">Difficulty</label>
-                    <select className="glass-input mt-1" value={formData.difficulty} onChange={e => updateField('difficulty', e.target.value)}>
-                        <option value="easy">Easy</option><option value="medium">Medium</option><option value="hard">Hard</option>
-                    </select></div>
+            <div className="bg-white/5 border border-white/10 p-10 rounded-3xl backdrop-blur-md">
+                <h3 className="text-xl font-bold text-white mb-8 tracking-tight uppercase opacity-60">General Parameters</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <Input label="URL Slug" value={formData.slug} onChange={e => updateField('slug', e.target.value)} error={validationErrors?.slug?.[0]} className="bg-white/5 border-white/10 text-white placeholder:text-slate-600" />
+                    <Input label="Price ($)" type="number" value={formData.price} onChange={e => updateField('price', Number(e.target.value))} error={validationErrors?.price?.[0]} className="bg-white/5 border-white/10 text-white placeholder:text-slate-600" />
+                    <Input label="Duration (Days)" type="number" value={formData.duration} onChange={e => updateField('duration', Number(e.target.value))} error={validationErrors?.duration?.[0]} className="bg-white/5 border-white/10 text-white placeholder:text-slate-600" />
+                    <Input label="Min Group" type="number" value={formData.minGroupSize} onChange={e => updateField('minGroupSize', Number(e.target.value))} className="bg-white/5 border-white/10 text-white placeholder:text-slate-600" />
+
+                    <div className="space-y-2">
+                        <label className="text-slate-400 text-xs font-bold uppercase tracking-widest">Intensity</label>
+                        <select className="nature-input py-3.5 px-6 rounded-xl bg-white/5 border-white/10 text-white font-bold w-full focus:border-forest-700 transition-all cursor-pointer" value={formData.difficulty} onChange={e => updateField('difficulty', e.target.value)}>
+                            <option value="easy" className="bg-forest-900">Serene</option>
+                            <option value="medium" className="bg-forest-900">Active</option>
+                            <option value="hard" className="bg-forest-900">Epic</option>
+                        </select>
+                    </div>
+
+                    <div className="flex items-center gap-4 pt-8">
+                        <label className="text-slate-400 text-xs font-bold uppercase tracking-widest">Visibility</label>
+                        <button
+                            type="button"
+                            onClick={() => updateField('isPublished', !formData.isPublished)}
+                            className={cn("px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all",
+                                formData.isPublished ? "bg-green-500/20 text-green-400 border-green-500/30" : "bg-white/5 text-slate-500 border-white/10")}
+                        >
+                            {formData.isPublished ? 'Live' : 'Draft'}
+                        </button>
+                    </div>
+                </div>
             </div>
 
-            {/* Language Specific Fields */}
-            <div className="space-y-6 animate-in fade-in duration-300">
-                <Input label={`Title (${activeLang.toUpperCase()})`}
-                    value={activeLang === 'ru' ? formData.title_ru : (formData.title_en || '')}
-                    onChange={e => updateField(activeLang === 'ru' ? 'title_ru' : 'title_en', e.target.value)}
-                    error={activeLang === 'ru' ? validationErrors?.title_ru?.[0] : undefined}
-                />
+            {/* Language Specific Fields Content Card */}
+            <div className="bg-white/5 border border-white/10 p-10 rounded-3xl backdrop-blur-md space-y-10">
+                <h3 className="text-xl font-bold text-white tracking-tight uppercase opacity-60">Content Details ({activeLang})</h3>
 
-                <div className="space-y-2">
-                    <label className="text-slate-300 text-sm">Short Description</label>
-                    <textarea
-                        className="glass-input min-h-[80px]"
-                        value={activeLang === 'ru' ? formData.shortDescription_ru : (formData.shortDescription_en || '')}
-                        onChange={e => updateField(activeLang === 'ru' ? 'shortDescription_ru' : 'shortDescription_en', e.target.value)}
+                <div className="space-y-8">
+                    <Input label="Narrative Heading"
+                        value={activeLang === 'ru' ? formData.title_ru : (formData.title_en || '')}
+                        onChange={e => updateField(activeLang === 'ru' ? 'title_ru' : 'title_en', e.target.value)}
+                        error={activeLang === 'ru' ? validationErrors?.title_ru?.[0] : undefined}
+                        className="bg-white/5 border-white/10 text-white"
+                        placeholder="Enter a captivating name for this route"
+                    />
+
+                    <div className="space-y-3">
+                        <label className="text-slate-400 text-xs font-bold uppercase tracking-widest">Condensed Description (Excerpt)</label>
+                        <textarea
+                            className="nature-input min-h-[100px] bg-white/5 border-white/10 text-white rounded-2xl p-6"
+                            placeholder="A brief hook for the tour card..."
+                            value={activeLang === 'ru' ? formData.shortDescription_ru : (formData.shortDescription_en || '')}
+                            onChange={e => updateField(activeLang === 'ru' ? 'shortDescription_ru' : 'shortDescription_en', e.target.value)}
+                        />
+                    </div>
+
+                    <div className="space-y-3">
+                        <label className="text-slate-400 text-xs font-bold uppercase tracking-widest">The Narrative (Full Story)</label>
+                        <textarea
+                            className="nature-input min-h-[250px] bg-white/5 border-white/10 text-white rounded-2xl p-8"
+                            placeholder="Tell the story of this journey..."
+                            value={activeLang === 'ru' ? formData.description_ru : (formData.description_en || '')}
+                            onChange={e => updateField(activeLang === 'ru' ? 'description_ru' : 'description_en', e.target.value)}
+                        />
+                    </div>
+
+                    <Input label="Base Location"
+                        value={activeLang === 'ru' ? formData.location_ru : (formData.location_en || '')}
+                        onChange={e => updateField(activeLang === 'ru' ? 'location_ru' : 'location_en', e.target.value)}
+                        className="bg-white/5 border-white/10 text-white"
                     />
                 </div>
-
-                <div className="space-y-2">
-                    <label className="text-slate-300 text-sm">Full Description (Markdown supported)</label>
-                    <textarea
-                        className="glass-input min-h-[200px]"
-                        value={activeLang === 'ru' ? formData.description_ru : (formData.description_en || '')}
-                        onChange={e => updateField(activeLang === 'ru' ? 'description_ru' : 'description_en', e.target.value)}
-                    />
-                </div>
-
-                <Input label="Location"
-                    value={activeLang === 'ru' ? formData.location_ru : (formData.location_en || '')}
-                    onChange={e => updateField(activeLang === 'ru' ? 'location_ru' : 'location_en', e.target.value)}
-                />
 
                 {/* Program */}
-                <div className="glass p-6 rounded-xl">
-                    <h3 className="text-xl font-bold text-white mb-4">Program ({activeLang.toUpperCase()})</h3>
+                <div className="bg-white/5 border border-white/10 p-8 rounded-3xl">
+                    <h3 className="text-xl font-bold text-white mb-8 tracking-tight uppercase opacity-60">Expedition Timeline</h3>
                     {/* @ts-ignore */}
                     {(activeLang === 'ru' ? formData.program_ru : (formData.program_en || [])).map((day: any, idx: number) => (
-                        <div key={idx} className="mb-6 border-l-2 border-primary/30 pl-4">
-                            <div className="flex justify-between items-center mb-2">
-                                <span className="text-primary font-bold">Day {day.day}</span>
-                                <button type="button" onClick={() => removeDay(activeLang, idx)} className="text-red-400 text-sm">Remove</button>
+                        <div key={idx} className="mb-10 p-8 bg-white/[0.02] border border-white/5 rounded-2xl relative group">
+                            <div className="flex justify-between items-center mb-6">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-xl bg-forest-800 flex items-center justify-center font-bold text-white">D{day.day}</div>
+                                    <span className="text-white font-extrabold uppercase tracking-widest text-xs">Phased Progress</span>
+                                </div>
+                                <button type="button" onClick={() => removeDay(activeLang, idx)} className="text-red-400 text-[10px] font-bold uppercase tracking-widest hover:text-red-300 transition-colors">Abort Phase</button>
                             </div>
-                            <div className="grid gap-3">
-                                <Input placeholder="Day Title" value={day.title} onChange={e => handleProgram(activeLang, idx, 'title', e.target.value)} />
-                                <textarea className="glass-input" rows={2} placeholder="Description" value={day.description} onChange={e => handleProgram(activeLang, idx, 'description', e.target.value)} />
+                            <div className="grid gap-4">
+                                <Input placeholder="Phase Milestone" value={day.title} onChange={e => handleProgram(activeLang, idx, 'title', e.target.value)} className="bg-white/5 border-white/10" />
+                                <textarea className="nature-input bg-white/5 border-white/10 min-h-[100px] p-6 text-white rounded-xl text-sm" placeholder="Describe the phase narrative..." value={day.description} onChange={e => handleProgram(activeLang, idx, 'description', e.target.value)} />
                             </div>
                         </div>
                     ))}
-                    <Button type="button" variant="secondary" size="sm" onClick={() => addDay(activeLang)}>+ Add Day</Button>
+                    <Button type="button" variant="secondary" size="sm" onClick={() => addDay(activeLang)} className="w-full border-white/10 text-white hover:bg-white/10">+ New Phase</Button>
                 </div>
 
-                {/* Lists (Included/Highlights) */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="glass p-4 rounded-xl">
-                        <h4 className="font-bold text-white mb-2">Included</h4>
+                {/* Included/Highlights Lists */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="bg-white/5 border border-white/10 p-8 rounded-3xl">
+                        <h4 className="text-sm font-bold text-white mb-6 uppercase tracking-widest opacity-60">Provisioned Services</h4>
                         {/* @ts-ignore */}
                         {(activeLang === 'ru' ? formData.included_ru : (formData.included_en || [])).map((item, idx) => (
-                            <div key={idx} className="flex gap-2 mb-2">
-                                <Input value={item} onChange={e => handleArray(activeLang, 'included', idx, e.target.value)} />
-                                <button type="button" onClick={() => removeArrayItem(activeLang, 'included', idx)} className="text-red-400">×</button>
+                            <div key={idx} className="flex gap-3 mb-3">
+                                <Input value={item} onChange={e => handleArray(activeLang, 'included', idx, e.target.value)} className="bg-white/5 border-white/10 h-10 text-sm" />
+                                <button type="button" onClick={() => removeArrayItem(activeLang, 'included', idx)} className="text-red-400 text-xl font-light hover:text-red-300">×</button>
                             </div>
                         ))}
-                        <button type="button" onClick={() => addArrayItem(activeLang, 'included')} className="text-primary text-sm">+ Add</button>
+                        <button type="button" onClick={() => addArrayItem(activeLang, 'included')} className="mt-4 text-white/40 hover:text-white text-[10px] font-bold uppercase tracking-widest transition-colors">+ Append Entry</button>
                     </div>
 
-                    <div className="glass p-4 rounded-xl">
-                        <h4 className="font-bold text-white mb-2">Highlights/Not Included</h4>
-                        {/* Same logic for highlights/notIncluded if needed, kept simple for now */}
+                    <div className="bg-white/5 border border-white/10 p-8 rounded-3xl">
+                        <h4 className="text-sm font-bold text-white mb-6 uppercase tracking-widest opacity-60">Exclusions / Highlights</h4>
                         {/* @ts-ignore */}
                         {(activeLang === 'ru' ? formData.highlights_ru : (formData.highlights_en || [])).map((item, idx) => (
-                            <div key={idx} className="flex gap-2 mb-2">
-                                <Input value={item} onChange={e => handleArray(activeLang, 'highlights', idx, e.target.value)} />
-                                <button type="button" onClick={() => removeArrayItem(activeLang, 'highlights', idx)} className="text-red-400">×</button>
+                            <div key={idx} className="flex gap-3 mb-3">
+                                <Input value={item} onChange={e => handleArray(activeLang, 'highlights', idx, e.target.value)} className="bg-white/5 border-white/10 h-10 text-sm" />
+                                <button type="button" onClick={() => removeArrayItem(activeLang, 'highlights', idx)} className="text-red-400 text-xl font-light hover:text-red-300">×</button>
                             </div>
                         ))}
-                        <button type="button" onClick={() => addArrayItem(activeLang, 'highlights')} className="text-primary text-sm">+ Add</button>
+                        <button type="button" onClick={() => addArrayItem(activeLang, 'highlights')} className="mt-4 text-white/40 hover:text-white text-[10px] font-bold uppercase tracking-widest transition-colors">+ Append Entry</button>
                     </div>
                 </div>
             </div>
 
             {/* Images Universal */}
-            <div className="glass p-6 rounded-xl">
-                <h3 className="text-xl font-bold text-white mb-4">Gallery (URLs)</h3>
-                <div className="grid gap-4">
+            <div className="bg-white/5 border border-white/10 p-10 rounded-3xl backdrop-blur-md">
+                <h3 className="text-xl font-bold text-white mb-8 tracking-tight uppercase opacity-60">Visual Gallery</h3>
+                <div className="space-y-4">
                     {formData.images.map((img, idx) => (
-                        <div key={idx} className="flex gap-2">
-                            <Input placeholder="https://..." value={img} onChange={e => {
+                        <div key={idx} className="flex gap-4">
+                            <Input placeholder="Direct URL to high-res visual..." value={img} onChange={e => {
                                 const newImgs = [...formData.images];
                                 newImgs[idx] = e.target.value;
                                 updateField('images', newImgs);
-                            }} />
-                            <button type="button" onClick={() => updateField('images', formData.images.filter((_, i) => i !== idx))} className="text-red-400">×</button>
+                            }} className="bg-white/5 border-white/10 text-white" />
+                            <button type="button" onClick={() => updateField('images', formData.images.filter((_, i) => i !== idx))} className="text-red-400 text-xl font-light hover:text-red-300">×</button>
                         </div>
                     ))}
-                    <button type="button" onClick={() => updateField('images', [...formData.images, ''])} className="text-primary text-sm">+ Add Image</button>
+                    <Button type="button" variant="secondary" size="sm" onClick={() => updateField('images', [...formData.images, ''])} className="border-white/10 text-white hover:bg-white/10">+ Add Source</Button>
                 </div>
             </div>
 
-            <div className="sticky bottom-4 z-20">
-                <Button type="submit" variant="primary" size="lg" className="w-full shadow-2xl shadow-primary/40" isLoading={loading}>
-                    {isEdit ? 'Save Changes' : 'Create Tour'}
+            <div className="sticky bottom-8 z-30 px-10">
+                <Button type="submit" variant="primary" size="lg" className="w-full shadow-2xl bg-white text-forest-900 border-none h-16 text-xl font-black uppercase tracking-widest hover:bg-white active:scale-[0.98]" isLoading={loading}>
+                    {isEdit ? 'Authorize Updates' : 'Commit Expedition'}
                 </Button>
             </div>
         </form>

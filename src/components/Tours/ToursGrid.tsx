@@ -8,10 +8,12 @@ import { Pill } from '@/components/ui/Pill';
 import { Card } from '@/components/ui/Card';
 import { StarRating } from '@/components/ui/StarRating';
 import { AvatarGroup } from '@/components/ui/Chip';
+import { Button } from '@/components/ui/Button';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export function ToursGrid({ tours }: { tours: any[] }) {
-    const { language, t } = useLanguage();
+    const { language, t, hasHydrated } = useLanguage();
+    const displayLanguage = hasHydrated ? language : 'ru';
     const [filter, setFilter] = useState<'all' | 'easy' | 'medium' | 'hard'>('all');
     const [sortBy, setSortBy] = useState<'price' | 'duration'>('price');
 
@@ -25,10 +27,10 @@ export function ToursGrid({ tours }: { tours: any[] }) {
     });
 
     const difficultyFilters = [
-        { value: 'all' as const, label: t('Все', 'All'), icon: '🌍' },
-        { value: 'easy' as const, label: t('Легкий', 'Easy'), icon: '🟢' },
-        { value: 'medium' as const, label: t('Средний', 'Medium'), icon: '🟡' },
-        { value: 'hard' as const, label: t('Сложный', 'Hard'), icon: '🔴' },
+        { value: 'all' as const, label: t('Весь мир', 'All Realms'), icon: '🏔️' },
+        { value: 'easy' as const, label: t('Спокойно', 'Serene'), icon: '🟢' },
+        { value: 'medium' as const, label: t('Активно', 'Active'), icon: '🟡' },
+        { value: 'hard' as const, label: t('Вызов', 'Epic'), icon: '🔴' },
     ];
 
     return (
@@ -53,10 +55,10 @@ export function ToursGrid({ tours }: { tours: any[] }) {
                 <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value as any)}
-                    className="nature-input py-2 px-4 text-sm"
+                    className="nature-input py-2 px-6 text-sm font-bold uppercase tracking-wider bg-white/50 border-sage-300 w-auto h-auto cursor-pointer hover:border-forest-700 transition-colors"
                 >
-                    <option value="price">{t("Цена", "Price")}</option>
-                    <option value="duration">{t("Длительность", "Duration")}</option>
+                    <option value="price">{t("Стоимость", "By Investment")}</option>
+                    <option value="duration">{t("Время в пути", "By Timeframe")}</option>
                 </select>
             </div>
 
@@ -91,7 +93,7 @@ export function ToursGrid({ tours }: { tours: any[] }) {
                                     <div className="relative h-72 overflow-hidden">
                                         <Image
                                             src={tour.images[0] || '/hero/kyrgyzstan-hero.webp'}
-                                            alt={tour[`title_${language}`] || tour.title_ru}
+                                            alt={tour[`title_${displayLanguage}`] || tour.title_ru}
                                             fill
                                             className="object-cover group-hover:scale-110 transition-transform duration-[1.2s] ease-nature"
                                         />
@@ -103,7 +105,7 @@ export function ToursGrid({ tours }: { tours: any[] }) {
                                                 📅 {tour.duration} {t("дней", "days")}
                                             </div>
                                             <div className="pill-info backdrop-blur-md bg-white/20 border-white/20 text-white shadow-sm">
-                                                📍 {tour[`location_${language}`] || tour.location_ru}
+                                                📍 {tour[`location_${displayLanguage}`] || tour.location_ru}
                                             </div>
                                             <div className="pill-info backdrop-blur-md bg-white/20 border-white/20 text-white shadow-sm capitalize">
                                                 {tour.difficulty === 'easy' ? '🟢' : tour.difficulty === 'medium' ? '🟡' : '🔴'}
@@ -112,17 +114,17 @@ export function ToursGrid({ tours }: { tours: any[] }) {
                                         </div>
 
                                         {/* Price */}
-                                        <div className="absolute top-5 right-5 bg-white/95 backdrop-blur-sm rounded-pill px-5 py-2.5 shadow-soft z-10">
+                                        <div className="absolute top-5 right-5 bg-white/95 backdrop-blur-sm rounded-xl px-5 py-2.5 shadow-soft z-10">
                                             <span className="font-extrabold text-forest-900 text-lg">${tour.price}</span>
                                         </div>
                                     </div>
 
                                     <div className="p-8 bg-cream flex-grow flex flex-col">
                                         <h3 className="text-h3 font-bold text-forest-900 mb-3 group-hover:text-forest-700 transition-colors">
-                                            {tour[`title_${language}`] || tour.title_ru}
+                                            {tour[`title_${displayLanguage}`] || tour.title_ru}
                                         </h3>
                                         <p className="text-forest-700 mb-6 line-clamp-2 leading-relaxed flex-grow">
-                                            {tour[`shortDescription_${language}`] || tour.shortDescription_ru}
+                                            {tour[`shortDescription_${displayLanguage}`] || tour.shortDescription_ru}
                                         </p>
 
                                         <div className="flex items-center justify-between pt-4 border-t border-sage-200">

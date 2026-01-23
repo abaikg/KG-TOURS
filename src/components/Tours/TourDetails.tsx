@@ -11,7 +11,8 @@ import { createBooking } from '@/app/actions/bookings';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export function TourDetails({ tour, reviews }: { tour: any, reviews: any[] }) {
-    const { language, t } = useLanguage();
+    const { language, t, hasHydrated } = useLanguage();
+    const displayLanguage = hasHydrated ? language : 'ru';
     const [showBooking, setShowBooking] = useState(false);
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
@@ -41,17 +42,17 @@ export function TourDetails({ tour, reviews }: { tour: any, reviews: any[] }) {
         }
     };
 
-    const title = tour[`title_${language}`] || tour.title_ru;
-    const description = tour[`description_${language}`] || tour.description_ru;
-    const location = tour[`location_${language}`] || tour.location_ru;
-    const program = tour[`program_${language}`] || tour.program_ru || [];
-    const included = tour[`included_${language}`] || tour.included_ru || [];
-    const notIncluded = tour[`notIncluded_${language}`] || tour.notIncluded_ru || [];
+    const title = tour[`title_${displayLanguage}`] || tour.title_ru;
+    const description = tour[`description_${displayLanguage}`] || tour.description_ru;
+    const location = tour[`location_${displayLanguage}`] || tour.location_ru;
+    const program = tour[`program_${displayLanguage}`] || tour.program_ru || [];
+    const included = tour[`included_${displayLanguage}`] || tour.included_ru || [];
+    const notIncluded = tour[`notIncluded_${displayLanguage}`] || tour.notIncluded_ru || [];
 
     return (
         <div className="pb-24">
             {/* Hero Image */}
-            <div className="relative h-[400px] md:h-[500px] -mt-20 mb-8 overflow-hidden bg-forest-900">
+            <div className="relative h-[350px] sm:h-[400px] md:h-[500px] -mt-20 mb-8 overflow-hidden bg-forest-900">
                 <Image
                     src={tour.images?.[0] || '/hero/kyrgyzstan-hero.webp'}
                     alt={title}
@@ -80,11 +81,11 @@ export function TourDetails({ tour, reviews }: { tour: any, reviews: any[] }) {
 
             <div className="container-x mx-auto">
                 {/* Title */}
-                <div className="mb-8">
-                    <h1 className="text-h1 font-bold text-forest-900 mb-4">{title}</h1>
-                    <div className="flex items-center gap-4">
+                <div className="mb-10">
+                    <h1 className="text-3xl sm:text-4xl md:text-6xl font-extrabold text-forest-900 mb-6 tracking-tight leading-tight">{title}</h1>
+                    <div className="flex items-center gap-6">
                         <StarRating rating={4.8} showNumber size="lg" />
-                        <span className="text-forest-700">({reviews.length} {t("отзывов", "reviews")})</span>
+                        <span className="text-forest-700 font-medium">{reviews.length} {t("историй гостей", "guest stories")}</span>
                     </div>
                 </div>
 
@@ -98,9 +99,9 @@ export function TourDetails({ tour, reviews }: { tour: any, reviews: any[] }) {
                     >
                         {/* Description */}
                         <Card className="overflow-hidden border-none shadow-soft">
-                            <div className="p-10">
-                                <h2 className="text-h2 font-bold text-forest-900 mb-6">{t("Описание", "Description")}</h2>
-                                <p className="text-forest-700 leading-relaxed text-lg whitespace-pre-line">
+                            <div className="p-6 sm:p-10">
+                                <h2 className="text-2xl sm:text-3xl font-bold text-forest-900 mb-8 tracking-tight">{t("О путешествии", "The Narrative")}</h2>
+                                <p className="text-forest-700 leading-relaxed text-xl whitespace-pre-line font-medium opacity-90">
                                     {description}
                                 </p>
                             </div>
@@ -109,7 +110,7 @@ export function TourDetails({ tour, reviews }: { tour: any, reviews: any[] }) {
                         {/* Program */}
                         {program.length > 0 && (
                             <section>
-                                <h2 className="text-h2 font-bold text-forest-900 mb-8 px-2">{t("Программа тура", "Tour Program")}</h2>
+                                <h2 className="text-2xl sm:text-3xl font-bold text-forest-900 mb-10 px-2 tracking-tight">{t("План экспедиции", "Expedition Timeline")}</h2>
                                 <div className="space-y-6">
                                     {program.map((day: any, i: number) => (
                                         <motion.div
@@ -120,7 +121,7 @@ export function TourDetails({ tour, reviews }: { tour: any, reviews: any[] }) {
                                             viewport={{ once: true }}
                                         >
                                             <Card className="border-none shadow-soft hover:shadow-card transition-shadow duration-300">
-                                                <div className="p-8 flex gap-6">
+                                                <div className="p-5 sm:p-8 flex flex-col sm:flex-row gap-6">
                                                     <div className="flex-shrink-0 w-16 h-16 rounded-2xl bg-sage-200 flex flex-col items-center justify-center font-bold text-forest-900">
                                                         <span className="text-xs uppercase opacity-70">{t("День", "Day")}</span>
                                                         <span className="text-2xl">{day.day}</span>
@@ -182,8 +183,8 @@ export function TourDetails({ tour, reviews }: { tour: any, reviews: any[] }) {
                                 viewport={{ once: true }}
                             >
                                 <Card className="border-none shadow-soft overflow-hidden">
-                                    <div className="p-10">
-                                        <h2 className="text-h2 font-bold text-forest-900 mb-8">{t("Отзывы", "Reviews")}</h2>
+                                    <div className="p-6 sm:p-10">
+                                        <h2 className="text-2xl sm:text-3xl font-bold text-forest-900 mb-10 tracking-tight">{t("Впечатления", "Guest Impressions")}</h2>
                                         <div className="space-y-8">
                                             {reviews.map((review: any) => (
                                                 <div key={review.id} className="border-b border-sage-200 pb-8 last:border-0 last:pb-0">
@@ -192,7 +193,7 @@ export function TourDetails({ tour, reviews }: { tour: any, reviews: any[] }) {
                                                         <StarRating rating={review.rating} size="sm" />
                                                     </div>
                                                     <p className="text-forest-700 italic leading-relaxed text-lg">
-                                                        "{review[`text_${language}`] || review.text_ru || review.comment}"
+                                                        "{review[`text_${displayLanguage}`] || review.text_ru || review.comment}"
                                                     </p>
                                                 </div>
                                             ))}
@@ -232,8 +233,10 @@ export function TourDetails({ tour, reviews }: { tour: any, reviews: any[] }) {
                                 ) : (
                                     <form onSubmit={handleSubmit} className="space-y-4">
                                         {success && (
-                                            <div className="bg-sage-100 text-forest-900 p-4 rounded-xl text-center font-bold">
-                                                {t("Заявка отправлена!", "Booking sent!")}
+                                            <div className="bg-sage-100/50 text-forest-900 p-6 rounded-2xl text-center mb-6">
+                                                <div className="text-3xl mb-2">🏔️</div>
+                                                <div className="font-bold text-lg">{t("Заявка принята!", "Request Received!")}</div>
+                                                <div className="text-sm opacity-80 mt-1">{t("Мы свяжемся с вами в течение часа", "We'll connect with you within an hour")}</div>
                                             </div>
                                         )}
 

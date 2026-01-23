@@ -6,11 +6,11 @@ import { cn } from "@/lib/utils";
 import { useState } from "react";
 
 const navItems = [
-    { name: "Обзор", href: "/admin", icon: "📊" },
-    { name: "Туры", href: "/admin/tours", icon: "🏔️" },
-    { name: "Отзывы", href: "/admin/reviews", icon: "💬" },
-    { name: "Брони", href: "/admin/bookings", icon: "📅" },
-    { name: "Настройки", href: "/admin/settings", icon: "⚙️" },
+    { name: "Обзор", href: "/admin", icon: "💎" },
+    { name: "Маршруты", href: "/admin/tours", icon: "🗺️" },
+    { name: "Отзывы", href: "/admin/reviews", icon: "✨" },
+    { name: "Бронирования", href: "/admin/bookings", icon: "🗝️" },
+    { name: "Настройки", href: "/admin/settings", icon: "🔘" },
 ];
 
 export function Sidebar() {
@@ -32,10 +32,16 @@ export function Sidebar() {
                     isOpen ? "translate-x-0" : "-translate-x-full"
                 )}
             >
-                <div className="flex h-16 items-center justify-center border-b border-white/10">
-                    <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                        KG Admin
-                    </h1>
+                <div className="flex h-24 items-center px-8 border-b border-white/5 line-none">
+                    <div className="group">
+                        <div className="flex items-center gap-2 leading-none">
+                            <h1 className="text-2xl font-black tracking-tighter text-white uppercase group-hover:text-gold transition-all duration-500">
+                                TOURS
+                            </h1>
+                            <div className="w-2 h-2 rounded-full bg-gold shadow-[0_0_15px_var(--color-gold)] animate-pulse" />
+                        </div>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-2">Admin Control</p>
+                    </div>
                 </div>
 
                 <nav className="mt-8 px-4 space-y-2">
@@ -44,9 +50,9 @@ export function Sidebar() {
                             key={item.href}
                             href={item.href}
                             className={cn(
-                                "flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all",
+                                "flex items-center gap-4 px-5 py-3.5 text-sm font-bold rounded-xl transition-all duration-300 uppercase tracking-widest",
                                 pathname === item.href
-                                    ? "bg-primary/20 text-primary shadow-[0_0_20px_rgba(139,92,246,0.1)] border border-primary/20"
+                                    ? "bg-white/10 text-white shadow-xl border border-white/10 backdrop-blur-md"
                                     : "text-slate-400 hover:bg-white/5 hover:text-white"
                             )}
                         >
@@ -56,10 +62,16 @@ export function Sidebar() {
                     ))}
                 </nav>
 
-                <div className="absolute bottom-8 px-4 w-full">
-                    <div className="p-4 glass rounded-xl">
-                        <p className="text-xs text-slate-500">Logged as Admin</p>
-                        <button className="mt-2 text-sm text-red-400 hover:text-red-300">Logout</button>
+                <div className="absolute bottom-10 px-6 w-full">
+                    <div className="p-6 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-8 h-8 rounded-lg bg-forest-800 flex items-center justify-center text-xs font-bold ring-1 ring-white/20">A</div>
+                            <div>
+                                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest leading-none">Status</p>
+                                <p className="text-sm font-bold text-white">Administrator</p>
+                            </div>
+                        </div>
+                        <button className="w-full py-2.5 rounded-xl bg-red-500/10 text-red-400 text-xs font-bold uppercase tracking-widest hover:bg-red-500/20 transition-all border border-red-500/20">Sign Out</button>
                     </div>
                 </div>
             </aside>

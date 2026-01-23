@@ -21,6 +21,17 @@
   --color-amber: #FFB84D;
 
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Premium Animations */
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+
+    100% {
+      transform: translateX(100%);
+    }
+  }
 }
 
 /* Base Styles */
@@ -30,13 +41,27 @@
 
 body {
   color: #2C3E3B;
-  background: #C8D5C8;
+  background: #FDFCFA;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   margin: 0;
   padding: 0;
   line-height: 1.6;
+}
+
+h1,
+h2,
+h3,
+h4,
+.text-premium {
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+p {
+  max-width: 68ch;
+  line-height: 1.75;
 }
 
 html {
@@ -89,55 +114,44 @@ html {
 
   /* Buttons */
   .btn-nature-primary {
+    @apply relative flex items-center justify-center gap-2 rounded-xl font-bold transition-all duration-200 ease-out active:scale-[0.985] focus:ring-2 focus:ring-forest-800/20 disabled:opacity-40;
     background: #1A3A2E;
     color: #FFFFFF;
-    border: none;
-    border-radius: 9999px;
-    padding: 16px 32px;
-    font-weight: 600;
-    font-size: 16px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 20px rgba(26, 58, 46, 0.2);
+    box-shadow: 0 4px 12px rgba(26, 58, 46, 0.15);
   }
 
   .btn-nature-primary:hover {
-    background: #0F2419;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 32px rgba(26, 58, 46, 0.3);
+    @apply brightness-110 -translate-y-[1px];
+    box-shadow: 0 8px 20px rgba(26, 58, 46, 0.25);
   }
 
   .btn-nature-secondary {
-    background: #FFFFFF;
+    @apply relative flex items-center justify-center gap-2 rounded-xl font-bold transition-all duration-200 ease-out active:scale-[0.985] focus:ring-2 focus:ring-sage-200;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(168, 191, 168, 0.3);
     color: #1A3A2E;
-    border: 2px solid #1A3A2E;
-    border-radius: 9999px;
-    padding: 14px 30px;
-    font-weight: 600;
-    font-size: 16px;
-    cursor: pointer;
-    transition: all 0.3s ease;
   }
 
   .btn-nature-secondary:hover {
-    background: #1A3A2E;
-    color: #FFFFFF;
-    transform: translateY(-2px);
+    @apply bg-white border-sage-400 -translate-y-[1px];
   }
 
-  /* Pills */
+  /* Pills / Tags */
   .pill {
     background: #FFFFFF;
-    border: 1px solid #A8BFA8;
-    border-radius: 9999px;
+    border: 1px solid rgba(168, 191, 168, 0.4);
+    border-radius: 12px;
     padding: 8px 20px;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 700;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
 
   .pill:hover {
@@ -152,15 +166,21 @@ html {
 
   .pill-sm {
     padding: 6px 16px;
-    font-size: 12px;
+    font-size: 11px;
   }
 
   .pill-info {
-    background: rgba(255, 255, 255, 0.95);
-    border: none;
-    padding: 4px 12px;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    padding: 6px 14px;
     font-size: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
   }
 
   /* Inputs */
@@ -202,13 +222,15 @@ html {
   .chip {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    padding: 4px 12px;
-    border-radius: 9999px;
-    font-size: 12px;
-    font-weight: 600;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
     background: rgba(255, 255, 255, 0.9);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   }
 
   /* Bottom Navigation */
@@ -224,7 +246,21 @@ html {
     z-index: 50;
   }
 
-  /* Star Rating */
+  /* Skeleton & Shimmer */
+  .skeleton {
+    @apply relative overflow-hidden bg-white/5 backdrop-blur-[2px] ring-1 ring-white/10;
+  }
+
+  .skeleton::after {
+    @apply absolute inset-0;
+    content: "";
+    background: linear-gradient(90deg,
+        transparent,
+        rgba(255, 255, 255, 0.05),
+        transparent);
+    animation: shimmer 2s infinite;
+  }
+
   .star {
     color: #F4C430;
     font-size: 16px;

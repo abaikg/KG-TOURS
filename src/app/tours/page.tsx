@@ -3,6 +3,8 @@ import { Header } from '@/components/Header/Header';
 import { Footer } from '@/components/Footer/Footer';
 import { BottomNav } from '@/components/ui/BottomNav';
 import { ToursGrid } from '@/components/Tours/ToursGrid';
+import { ToursHeader } from '@/components/Tours/ToursHeader';
+import { CTASection } from '@/components/ui/CTASection';
 
 export const dynamic = 'force-dynamic';
 
@@ -30,18 +32,14 @@ export default async function ToursPage() {
     return (
         <>
             <Header />
-            <main className="min-h-screen pt-8 pb-24">
+            <main className="min-h-screen pt-12">
                 <div className="container-x mx-auto">
-                    <div className="mb-8">
-                        <h1 className="text-h1 font-bold text-forest-900 mb-2">
-                            Все туры
-                        </h1>
-                        <p className="text-lg text-forest-700">
-                            Выберите идеальное путешествие по Кыргызстану
-                        </p>
-                    </div>
-
+                    <ToursHeader />
                     <ToursGrid tours={tours} />
+                </div>
+
+                <div className="mt-24">
+                    <CTASection />
                 </div>
             </main>
             <Footer />

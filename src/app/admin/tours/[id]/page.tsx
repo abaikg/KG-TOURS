@@ -51,11 +51,14 @@ export default async function EditTourPage({ params }: { params: Promise<{ id: s
     };
 
     return (
-        <div>
-            <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary mb-8">
-                Edit Tour
-            </h1>
-            <div className="max-w-5xl mx-auto">
+        <div className="space-y-10">
+            <div>
+                <h1 className="text-4xl font-extrabold text-white tracking-tight uppercase mb-2">
+                    Редактировать
+                </h1>
+                <p className="text-slate-400 font-medium">Обновление параметров экспедиции: {initialData.title_ru}</p>
+            </div>
+            <div className="max-w-5xl">
                 <TourForm initialData={initialData} isEdit={true} />
             </div>
         </div>
