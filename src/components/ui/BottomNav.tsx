@@ -56,7 +56,7 @@ export function BottomNav() {
 
     return (
         <nav className="bottom-nav md:hidden pb-safe">
-            <div className="flex items-center justify-around h-16">
+            <div className="flex items-center justify-between h-16 w-full max-w-[400px] mx-auto px-2">
                 {navItems.map((item) => {
                     const isActive = pathname === item.href;
 
@@ -64,12 +64,12 @@ export function BottomNav() {
                         <Link
                             key={item.href}
                             href={item.href}
-                            className="relative flex flex-col items-center justify-center py-1 px-4 outline-none"
+                            className="relative flex flex-col items-center justify-center p-2 outline-none w-full"
                         >
                             {isActive && (
                                 <motion.div
                                     layoutId="bottom-nav-active"
-                                    className="absolute inset-0 bg-white/20 rounded-xl"
+                                    className="absolute -top-1 w-8 h-1 bg-gold rounded-full shadow-[0_0_10px_rgba(234,179,8,0.5)]"
                                     transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                                 />
                             )}
@@ -77,13 +77,16 @@ export function BottomNav() {
                                 whileTap={{ scale: 0.9 }}
                                 className={cn(
                                     "relative z-10 flex flex-col items-center gap-1 transition-colors duration-300",
-                                    isActive ? "text-white" : "text-sage-400"
+                                    isActive ? "text-gold" : "text-sage-300 hover:text-sage-100"
                                 )}
                             >
-                                <div className={cn("transition-transform duration-300", isActive && "scale-110")}>
+                                <div className={cn("transition-transform duration-300", isActive && "scale-110 -translate-y-1")}>
                                     {item.icon}
                                 </div>
-                                <span className="text-[10px] font-bold uppercase tracking-wider">{item.label}</span>
+                                <span className={cn(
+                                    "text-[9px] font-black uppercase tracking-widest transition-all duration-300",
+                                    isActive ? "opacity-100" : "opacity-70"
+                                )}>{item.label}</span>
                             </motion.div>
                         </Link>
                     );

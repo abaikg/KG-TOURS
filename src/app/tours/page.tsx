@@ -1,38 +1,35 @@
-import { prisma } from '@/lib/prisma';
 import { Header } from '@/components/Header/Header';
 import { Footer } from '@/components/Footer/Footer';
 import { BottomNav } from '@/components/ui/BottomNav';
 import { ToursGrid } from '@/components/Tours/ToursGrid';
 import { ToursHeader } from '@/components/Tours/ToursHeader';
 import { CTASection } from '@/components/ui/CTASection';
+import { tours as mockTours } from '@/data/tours';
 
 export const dynamic = 'force-dynamic';
 
 export default async function ToursPage() {
-    let tours: any[] = [];
-
-    try {
-        tours = await prisma.tour.findMany({
-            where: { isPublished: true },
-            orderBy: { createdAt: 'desc' },
-        });
-    } catch (e) {
-        console.error("Tours page DB fetch error:", e);
-        // Fallback for design preview
-        tours = [
-            {
-                id: '1', slug: 'demo-tour', price: 500, duration: 7, difficulty: 'medium',
-                title_ru: 'Демо-тур (База данных оффлайн)', title_en: 'Demo Tour (DB Offline)',
-                shortDescription_ru: 'Пример тура для дизайна.', shortDescription_en: 'Example tour for design.',
-                images: ['/hero/kyrgyzstan-hero.webp'], location_ru: 'Иссык-Куль', location_en: 'Issyk-Kul'
-            }
-        ];
-    }
+    // Преобразуем моковые данные в формат, который ожидает ToursGrid
+    const tours = mockTours.map(tour => ({
+        id: tour.id.toString(),
+        slug: tour.slug,
+        price: parseInt(tour.price.replace(/\D/g, '')),
+        price_en: tour.price_en,
+        duration: tour.days,
+        difficulty: tour.difficulty === 'Легкий' ? 'easy' : tour.difficulty === 'Средний' ? 'medium' : 'hard',
+        title_ru: tour.title,
+        title_en: tour.title_en,
+        shortDescription_ru: tour.shortDescription,
+        shortDescription_en: tour.shortDescription_en,
+        images: tour.images,
+        location_ru: tour.region,
+        location_en: tour.region_en
+    }));
 
     return (
         <>
             <Header />
-            <main className="min-h-screen pt-12">
+            <main className="min-h-screen pt-24 md:pt-32">
                 <div className="container-x mx-auto">
                     <ToursHeader />
                     <ToursGrid tours={tours} />

@@ -1,25 +1,32 @@
 "use client";
 
+// ... imports ...
 import { useEffect, useState } from "react";
 // import { reviews as allReviews } from "@/data/reviews"; // legacy
+import Image from "next/image";
 
 interface Review {
-  id: string;
+  id: string; // id is string or number in data? data says number.
+  id_num?: number;
   name: string;
   rating: number;
-  comment: string;
+  text: string; // data uses 'text'
+  comment?: string; // component uses 'comment'
+  avatar?: string;
+  photos?: string[];
+  country?: string;
 }
 
 type Props = {
   title?: string;
-  reviews?: Review[];
+  reviews?: any[]; // Loose type to handle data mismatch if any
 };
 
 function Stars({ rating }: { rating: number }) {
   return (
     <div className="flex items-center gap-1" aria-label={`Rating ${rating} out of 5`}>
       {Array.from({ length: 5 }).map((_, i) => (
-        <span key={i} className={i < rating ? "text-yellow-500" : "text-gray-300"}>
+        <span key={i} className={i < rating ? "text-[#fbbf24] drop-shadow-sm text-lg" : "text-gray-200 text-lg"}>
           ★
         </span>
       ))}
@@ -28,7 +35,6 @@ function Stars({ rating }: { rating: number }) {
 }
 
 export function ReviewsCarousel({ title = "Reviews", reviews = [] }: Props) {
-  // const reviews = useMemo(() => allReviews, []);
   const [index, setIndex] = useState(0);
 
   // auto scroll
@@ -36,107 +42,132 @@ export function ReviewsCarousel({ title = "Reviews", reviews = [] }: Props) {
     if (reviews.length === 0) return;
     const t = setInterval(() => {
       setIndex((prev) => (prev + 1) % reviews.length);
-    }, 4500);
+    }, 6000); // Slower for reading detailed reviews
     return () => clearInterval(t);
   }, [reviews.length]);
 
   if (reviews.length === 0) {
     return (
       <section id="reviews" className="mx-auto max-w-6xl px-4 pb-12">
-        <div className="text-center text-gray-500">
-          No reviews yet.
-        </div>
+        <div className="text-center text-gray-500">No reviews yet.</div>
       </section>
-    )
+    );
   }
 
   const current = reviews[index];
+  const comment = current.text || current.comment; // Handle both fields
 
   return (
-    <section id="reviews" className="mx-auto max-w-6xl px-4 pb-12">
-      <div className="rounded-3xl border border-black/5 bg-white shadow-sm overflow-hidden">
-        <div className="p-6 md:p-10">
-          <div className="flex items-end justify-between gap-4">
+    <section id="reviews" className="mx-auto max-w-7xl px-4 pb-20 pt-10">
+      <div className="relative overflow-hidden rounded-[2.5rem] bg-white shadow-2xl ring-1 ring-black/5">
+        {/* Decorative background element */}
+        <div className="absolute -right-20 -top-20 h-96 w-96 rounded-full bg-blue-50/50 blur-3xl" />
+        <div className="absolute -left-20 bottom-0 h-72 w-72 rounded-full bg-amber-50/50 blur-3xl" />
+
+        <div className="relative z-10 p-8 md:p-12 lg:p-16">
+          <div className="flex flex-col md:flex-row items-end justify-between gap-8 mb-12">
             <div>
-              <div className="text-sm text-grayText">Feedback</div>
-              <h2 className="mt-1 text-2xl md:text-3xl font-bold text-gray-900">
+              <div className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-600 uppercase tracking-wider">
+                <span className="h-1.5 w-1.5 rounded-full bg-blue-600 animate-pulse" />
+                Verified Travelers
+              </div>
+              <h2 className="mt-4 text-3xl md:text-5xl font-bold text-gray-900 tracking-tight">
                 {title}
               </h2>
-              <p className="mt-2 text-grayText">
-                Real impressions from tourists.
+              <p className="mt-4 text-lg text-gray-600 max-w-2xl">
+                Real stories from adventurers who trusted us with their journey through the Tian Shan mountains.
               </p>
             </div>
 
-            <div className="hidden md:flex gap-2">
+            <div className="flex gap-3">
               <button
                 onClick={() => setIndex((i) => (i - 1 + reviews.length) % reviews.length)}
-                className="h-11 w-11 rounded-2xl border border-black/10 hover:bg-black/5 transition active:scale-[0.98]"
-                aria-label="Back"
+                className="h-14 w-14 flex items-center justify-center rounded-full border border-gray-200 bg-white shadow-sm hover:shadow-md hover:border-gray-300 hover:scale-105 transition-all outline-none focus:ring-2 focus:ring-blue-500/20"
+                aria-label="Previous review"
               >
                 ←
               </button>
               <button
                 onClick={() => setIndex((i) => (i + 1) % reviews.length)}
-                className="h-11 w-11 rounded-2xl border border-black/10 hover:bg-black/5 transition active:scale-[0.98]"
-                aria-label="Next"
+                className="h-14 w-14 flex items-center justify-center rounded-full border border-gray-200 bg-white shadow-sm hover:shadow-md hover:border-gray-300 hover:scale-105 transition-all outline-none focus:ring-2 focus:ring-blue-500/20"
+                aria-label="Next review"
               >
                 →
               </button>
             </div>
           </div>
 
-          <div className="mt-6 grid md:grid-cols-5 gap-6 items-stretch">
-            {/* Card */}
-            <div className="md:col-span-3 rounded-3xl border border-black/10 bg-gradient-to-b from-black/[0.03] to-transparent p-6">
-              <Stars rating={current.rating} />
-              <p className="mt-4 text-gray-900 text-lg leading-relaxed">
-                “{current.comment}”
-              </p>
-              <div className="mt-5 flex items-center justify-between gap-4">
-                <div>
-                  <div className="font-semibold text-gray-900">{current.name}</div>
-                  {/* Country removed as it's not in schema */}
+          <div className="grid lg:grid-cols-12 gap-8 items-start">
+            {/* Main Review Card */}
+            <div className="lg:col-span-7 bg-gray-50/80 backdrop-blur-sm rounded-3xl p-8 border border-white/50 shadow-inner">
+              <div className="flex gap-4 items-center mb-6">
+                {/* Avatar */}
+                <div className="relative h-16 w-16 md:h-20 md:w-20 shrink-0">
+                  <Image
+                    src={current.avatar || "/placeholder.jpg"}
+                    alt={current.name}
+                    fill
+                    className="rounded-full object-cover border-4 border-white shadow-md"
+                  />
+                  <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-1 shadow-sm">
+                    <div className="text-xl">❝</div>
+                  </div>
                 </div>
 
-                <div className="flex gap-2 md:hidden">
-                  <button
-                    onClick={() =>
-                      setIndex((i) => (i - 1 + reviews.length) % reviews.length)
-                    }
-                    className="h-10 w-10 rounded-2xl border border-black/10 hover:bg-black/5 transition active:scale-[0.98]"
-                    aria-label="Back"
-                  >
-                    ←
-                  </button>
-                  <button
-                    onClick={() => setIndex((i) => (i + 1) % reviews.length)}
-                    className="h-10 w-10 rounded-2xl border border-black/10 hover:bg-black/5 transition active:scale-[0.98]"
-                    aria-label="Next"
-                  >
-                    →
-                  </button>
+                <div>
+                  <div className="font-bold text-xl text-gray-900">{current.name}</div>
+                  <div className="text-gray-500 font-medium">{current.country}</div>
                 </div>
+
+                <div className="ml-auto scale-110 origin-right hidden sm:block">
+                  <Stars rating={current.rating} />
+                </div>
+              </div>
+
+              <blockquote className="text-xl md:text-2xl leading-relaxed text-gray-800 font-medium font-serif italic">
+                {comment}
+              </blockquote>
+
+              <div className="mt-6 flex sm:hidden">
+                <Stars rating={current.rating} />
               </div>
             </div>
 
-            {/* Dots / Navigation */}
-            <div className="md:col-span-2 rounded-3xl border border-black/10 p-6">
-              <div className="text-sm text-grayText">All Reviews</div>
-              <div className="mt-4 flex flex-wrap gap-2">
+            {/* Photos & Navigation */}
+            <div className="lg:col-span-5 flex flex-col gap-6">
+              {/* Review Photos */}
+              {current.photos && current.photos.length > 0 && (
+                <div className="grid grid-cols-2 gap-3">
+                  {current.photos.slice(0, 2).map((photo: string, idx: number) => (
+                    <div key={idx} className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-md group">
+                      <Image
+                        src={photo}
+                        alt={`Photo by ${current.name}`}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Mini Navigation Pills */}
+              <div className="flex flex-wrap gap-2">
                 {reviews.map((r, i) => (
                   <button
-                    key={r.id}
+                    key={r.id || i}
                     onClick={() => setIndex(i)}
-                    className={[
-                      "px-3 py-2 rounded-2xl border transition text-sm",
-                      i === index
-                        ? "border-blue-500/30 bg-blue-500/10 text-blue-600"
-                        : "border-black/10 hover:bg-black/5 text-gray-900",
-                    ].join(" ")}
-                  >
-                    {r.name}
-                  </button>
+                    className={`h-2.5 w-2.5 rounded-full transition-all duration-300 ${i === index
+                        ? "bg-blue-600 w-8"
+                        : "bg-gray-300 hover:bg-gray-400"
+                      }`}
+                    aria-label={`Go to review ${i + 1}`}
+                  />
                 ))}
+              </div>
+
+              <div className="text-sm text-gray-400">
+                Review {index + 1} of {reviews.length}
               </div>
             </div>
           </div>

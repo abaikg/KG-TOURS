@@ -1,4 +1,3 @@
-import { prisma } from '@/lib/prisma';
 import { Header } from '@/components/Header/Header';
 import { Footer } from '@/components/Footer/Footer';
 import { BottomNav } from '@/components/ui/BottomNav';
@@ -7,7 +6,8 @@ import { HomeSkeleton } from '@/components/Home/HomeSkeleton';
 import { siteConfig } from '@/config/site';
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
-import type { HomeTour, HomeReview } from '@/types/home';
+import { tours as mockTours } from '@/data/tours';
+import { reviews as mockReviews } from '@/data/reviews';
 
 export const metadata: Metadata = {
   title: siteConfig.title,
@@ -36,58 +36,42 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
-async function getHomeData(): Promise<{
-  tours: HomeTour[];
-  reviews: HomeReview[];
-}> {
-  try {
-    const [tours, reviews] = await Promise.all([
-      prisma.tour.findMany({
-        where: { isPublished: true },
-        orderBy: { createdAt: 'desc' },
-        take: 6,
-      }),
-      prisma.review.findMany({
-        where: { status: 'APPROVED' },
-        orderBy: { createdAt: 'desc' },
-        take: 6,
-      }),
-    ]);
+function getHomeData() {
+  // Преобразуем моковые туры в формат для HomeContent
+  const tours = mockTours.slice(0, 6).map(tour => ({
+    id: tour.id.toString(),
+    slug: tour.slug,
+    price: parseInt(tour.price.replace(/\D/g, '')),
+    price_en: tour.price_en,
+    duration: tour.days,
+    difficulty: tour.difficulty === 'Легкий' ? 'easy' : tour.difficulty === 'Средний' ? 'medium' : 'hard',
+    title_ru: tour.title,
+    title_en: tour.title_en,
+    shortDescription_ru: tour.shortDescription,
+    shortDescription_en: tour.shortDescription_en,
+    images: tour.images,
+    location_ru: tour.region,
+    location_en: tour.region_en
+  }));
 
-    return { tours, reviews };
-  } catch (e) {
-    console.error('Home fetch error:', e);
+  // Преобразуем моковые отзывы
+  const reviews = mockReviews.slice(0, 6).map(review => ({
+    id: review.id.toString(),
+    rating: review.rating,
+    authorName: review.name,
+    country: review.country,
+    createdAt: new Date().toISOString(),
+    text_ru: review.text,
+    text_en: review.text,
+    avatar: review.avatar,
+    photos: review.photos
+  }));
 
-    return {
-      tours: [
-        {
-          id: 'demo',
-          slug: 'demo-tour',
-          price: 500,
-          duration: 7,
-          difficulty: 'medium',
-          title_ru: 'Демо-тур по Кыргызстану',
-          title_en: 'Demo Tour Kyrgyzstan',
-          shortDescription_ru: 'Пример тура (fallback)',
-          shortDescription_en: 'Example tour (fallback)',
-          images: ['/hero/kyrgyzstan-hero.webp'],
-        },
-      ],
-      reviews: [
-        {
-          id: 'demo',
-          userName: 'Traveler',
-          rating: 5,
-          comment: 'Great design!',
-          createdAt: new Date().toISOString(),
-        },
-      ],
-    };
-  }
+  return { tours, reviews };
 }
 
-async function HomeData() {
-  const { tours, reviews } = await getHomeData();
+function HomeData() {
+  const { tours, reviews } = getHomeData();
   return <HomeContent tours={tours} reviews={reviews} />;
 }
 

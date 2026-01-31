@@ -49,42 +49,48 @@ export function Footer() {
   ];
 
   return (
-    <footer className="bg-forest-900 border-t border-white/5 relative overflow-hidden pb-24 md:pb-0">
+    <footer className="bg-forest-900 border-t border-white/5 relative overflow-hidden pb-32 md:pb-8">
       {/* Decorative Gradient Background */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[300px] bg-[radial-gradient(circle_at_50%_0%,rgba(168,191,168,0.05),transparent_70%)] pointer-events-none" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[400px] bg-[radial-gradient(ellipse_at_top,rgba(244,196,48,0.03),transparent_70%)] pointer-events-none" />
 
-      <div className="container-x mx-auto pt-20 pb-12 relative z-10">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-16 md:gap-12 lg:gap-24 text-center sm:text-left">
+      <div className="container-x mx-auto pt-16 md:pt-24 pb-8 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8 text-center md:text-left">
 
-          {/* Brand & Mission */}
-          <div className="flex flex-col items-center sm:items-start space-y-8">
+          {/* Brand Column */}
+          <div className="lg:col-span-4 flex flex-col items-center md:items-start space-y-6">
             <Link href="/" className="group inline-block">
               <div className="flex items-center gap-2.5">
-                <span className="text-3xl md:text-4xl font-black text-white tracking-tighter uppercase group-hover:text-gold transition-all duration-500">
+                <span className="text-4xl font-black text-white tracking-tighter uppercase group-hover:text-gold transition-all duration-500">
                   TOURS
                 </span>
                 <div className="w-2.5 h-2.5 rounded-full bg-gold shadow-[0_0_15px_rgba(244,196,48,0.5)] animate-pulse" />
               </div>
             </Link>
-            <p className="text-sage-100/60 text-base leading-relaxed max-w-[28ch] font-medium">
+            <p className="text-sage-100/60 text-base leading-relaxed max-w-sm mx-auto md:mx-0 font-medium">
               {t(
                 "Авторские экспедиции и погружение в самое сердце природы Кыргызстана.",
                 "Crafted expeditions into the untamed heart of the Kyrgyz wilderness."
               )}
             </p>
+            <div className="pt-2">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm">
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse outline outline-4 outline-emerald-500/20" />
+                <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">{t("Открыты к бронированию", "Open for Expeditions")}</span>
+              </div>
+            </div>
           </div>
 
-          {/* Navigation Section */}
-          <div className="space-y-8">
-            <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">
-              {t("Навигация", "Navigational Pathways")}
+          {/* Navigation Column */}
+          <div className="lg:col-span-2 lg:col-start-6 space-y-6">
+            <h4 className="text-[11px] font-black text-white/40 uppercase tracking-[0.2em] mb-4">
+              {t("Меню", "Menu")}
             </h4>
             <ul className="space-y-4">
               {navLinks.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sage-100/70 hover:text-gold transition-all duration-300 text-sm font-bold uppercase tracking-widest block"
+                    className="text-sage-100/80 hover:text-gold hover:pl-2 transition-all duration-300 text-sm font-bold uppercase tracking-widest block"
                   >
                     {link.label}
                   </Link>
@@ -93,67 +99,58 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Contact Details */}
-          <div className="space-y-8">
-            <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">
-              {t("Связь с нами", "Direct Channels")}
+          {/* Contact Column */}
+          <div className="lg:col-span-3 space-y-6">
+            <h4 className="text-[11px] font-black text-white/40 uppercase tracking-[0.2em] mb-4">
+              {t("Контакты", "Contact")}
             </h4>
-            <ul className="space-y-5">
-              <li className="group">
-                <a href="mailto:info@kg-tours.com" className="flex flex-col items-center sm:items-start gap-1">
-                  <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">{t("Почта", "Inquiries")}</span>
-                  <span className="text-sage-100 group-hover:text-gold transition-colors font-bold tracking-tight">info@kg-tours.com</span>
+            <ul className="space-y-6">
+              <li>
+                <a href="tel:+996500715638" className="group flex flex-col items-center md:items-start gap-1">
+                  <div className="text-lg font-bold text-white group-hover:text-gold transition-colors tracking-tight">+996 500 715 638</div>
+                  <div className="text-[10px] font-bold text-emerald-500 uppercase tracking-wider">WhatsApp / Telegram</div>
                 </a>
               </li>
-              <li className="group">
-                <a href="tel:+996555123456" className="flex flex-col items-center sm:items-start gap-1">
-                  <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">{t("Телефон", "Support")}</span>
-                  <span className="text-sage-100 group-hover:text-gold transition-colors font-bold tracking-tight">+996 555 123 456</span>
+              <li>
+                <a href="mailto:info@kg-tours.com" className="group flex flex-col items-center md:items-start gap-1">
+                  <div className="text-lg font-bold text-white group-hover:text-gold transition-colors tracking-tight">info@kg-tours.com</div>
+                  <div className="text-[10px] font-bold text-sage-400 uppercase tracking-wider">{t("Почта поддержки", "Support Email")}</div>
                 </a>
-              </li>
-              <li className="flex flex-col items-center sm:items-start gap-1">
-                <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">{t("Локация", "HQ")}</span>
-                <span className="text-sage-100 font-bold tracking-tight">{t("Бишкек, Кыргызстан", "Bishkek, KG")}</span>
               </li>
             </ul>
           </div>
 
-          {/* Social Presence */}
-          <div className="space-y-8">
-            <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">
-              {t("Соцсети", "Digital Presence")}
+          {/* Social Column */}
+          <div className="lg:col-span-2 space-y-6">
+            <h4 className="text-[11px] font-black text-white/40 uppercase tracking-[0.2em] mb-4">
+              {t("Соцсети", "Socials")}
             </h4>
-            <div className="flex justify-center sm:justify-start gap-4">
+            <div className="flex justify-center md:justify-start gap-3">
               {socialLinks.map((social, i) => (
                 <motion.a
                   key={i}
                   href={social.href}
-                  whileHover={{ y: -4, scale: 1.05 }}
+                  whileHover={{ y: -4 }}
                   whileTap={{ scale: 0.95 }}
-                  className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center transition-colors hover:bg-white/10 hover:border-white/20 shadow-xl group text-sage-100"
+                  className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center transition-all hover:bg-gold hover:border-gold hover:text-forest-900 shadow-lg text-sage-200"
                   aria-label={social.label}
                 >
-                  <div className="group-hover:scale-110 group-hover:text-gold transition-all duration-300">{social.icon}</div>
+                  {social.icon}
                 </motion.a>
               ))}
             </div>
-            <div className="pt-4">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10">
-                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">{t("Принимаем заявки", "Booking Active")}</span>
-              </div>
-            </div>
           </div>
+
         </div>
 
         {/* Footer Bottom Bar */}
-        <div className="mt-24 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-center">
-          <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
-            © 2026 KG TOURS. {t("Все права защищены.", "Curating the peaks.")}
+        <div className="mt-20 pt-8 border-t border-white/5 flex flex-col-reverse md:flex-row justify-between items-center gap-6 text-center md:text-left">
+          <p className="text-[10px] font-black text-white/30 uppercase tracking-widest">
+            © 2026 KG TOURS. {t("Все права защищены.", "All rights reserved.")}
           </p>
           <div className="flex gap-8">
-            <Link href="#" className="text-[9px] font-black text-slate-600 hover:text-gold transition-colors uppercase tracking-[0.2em]">{t("Конфиденциальность", "Privacy")}</Link>
-            <Link href="#" className="text-[9px] font-black text-slate-600 hover:text-gold transition-colors uppercase tracking-[0.2em]">{t("Условия", "Terms")}</Link>
+            <Link href="#" className="text-[10px] font-black text-white/40 hover:text-gold transition-colors uppercase tracking-[0.15em]">{t("Конфиденциальность", "Privacy Policy")}</Link>
+            <Link href="#" className="text-[10px] font-black text-white/40 hover:text-gold transition-colors uppercase tracking-[0.15em]">{t("Условия", "Terms & Conditions")}</Link>
           </div>
         </div>
       </div>

@@ -14,34 +14,36 @@ export function TourGallery({ images, title }: Props) {
   if (!images.length) return null;
 
   return (
-    <div>
+    <div className="group">
       {/* MAIN IMAGE */}
-      <div className="relative h-64 md:h-96 overflow-hidden rounded-[var(--radius-lg)] border border-black/5">
+      <div className="relative aspect-[4/3] md:aspect-[16/10] overflow-hidden rounded-3xl border border-black/5 shadow-premium transition-shadow hover:shadow-2xl">
         <Image
           src={images[active]}
           alt={title}
           fill
           priority
           sizes="(max-width: 768px) 100vw, 1200px"
-          className="object-cover"
+          className="object-cover transition-transform duration-700 ease-out will-change-transform group-hover:scale-105"
         />
 
-        {/* gradient for readability */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-transparent" />
+        {/* Cinematic gradient overlay */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
+
+        {/* Caption/Title on image if needed, or just decoration */}
       </div>
 
       {/* THUMBNAILS */}
       {images.length > 1 && (
-        <div className="mt-3 flex gap-3 overflow-x-auto pb-2">
+        <div className="mt-4 flex gap-3 overflow-x-auto pb-4 scrollbar-hide">
           {images.map((img, i) => (
             <button
               key={img}
               onClick={() => setActive(i)}
               className={[
-                "relative h-20 w-28 shrink-0 overflow-hidden rounded-xl border transition",
+                "relative h-20 w-28 shrink-0 overflow-hidden rounded-xl border transition-all duration-300",
                 active === i
-                  ? "border-[color:var(--brand)] ring-2 ring-[color:var(--brand)]/30"
-                  : "border-black/10 hover:border-black/30",
+                  ? "border-blue-500 ring-2 ring-blue-500/30 scale-105 shadow-md z-10"
+                  : "border-transparent opacity-70 hover:opacity-100 hover:scale-105",
               ].join(" ")}
             >
               <Image

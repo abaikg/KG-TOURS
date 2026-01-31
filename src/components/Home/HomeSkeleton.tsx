@@ -1,12 +1,11 @@
 // components/Home/HomeSkeleton.tsx
 export function HomeSkeleton() {
   return (
-    <section className="container-x py-12 space-y-12">
+    <section className="container-x pt-24 md:pt-32 pb-12 space-y-12">
 
       {/* Hero */}
       <div className="space-y-4">
-        <div className="skeleton skeleton-title" />
-        <div className="skeleton skeleton-text w-4/5" />
+        <div className="skeleton w-full min-h-[500px] md:min-h-[700px] rounded-[24px] md:rounded-[40px]" />
       </div>
 
       {/* Tours */}

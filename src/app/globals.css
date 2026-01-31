@@ -12,6 +12,8 @@
   --color-sage-400: #A8BFA8;
   --color-sage-500: #7FA87F;
 
+  --color-forest-500: #4A8C6F;
+  --color-forest-600: #3D7A5C;
   --color-forest-700: #2D5F4D;
   --color-forest-800: #1A3A2E;
   --color-forest-900: #0F2419;
@@ -60,6 +62,35 @@ h4,
 p {
   max-width: 68ch;
   line-height: 1.75;
+  text-wrap: pretty;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F5F7F5;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #C8D5C8;
+  border-radius: 5px;
+  border: 2px solid #F5F7F5;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #A8BFA8;
+}
+
+/* Premium Text Utilities */
+.text-balance {
+  text-wrap: balance;
+}
+
+.text-shadow-sm {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 /* Selection */
@@ -75,6 +106,7 @@ p {
   0% {
     background-position: 200% 0;
   }
+
   100% {
     background-position: -200% 0;
   }
@@ -86,7 +118,10 @@ p {
 @layer utilities {
 
   /* -------- Cards -------- */
-  .nature-card {
+  /* -------- Cards -------- */
+  .nature-card,
+  .nature-card-lg,
+  .nature-card-image {
     background: linear-gradient(180deg, #FFFFFF 0%, #FDFCFA 100%);
     border-radius: 24px;
     border: 1px solid rgba(168, 191, 168, 0.2);
@@ -96,7 +131,9 @@ p {
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .nature-card:hover {
+  .nature-card:hover,
+  .nature-card-lg:hover,
+  .nature-card-image:hover {
     transform: translateY(-6px);
     border-color: rgba(168, 191, 168, 0.4);
     box-shadow:
@@ -104,18 +141,67 @@ p {
       0 16px 48px rgba(0, 0, 0, 0.1);
   }
 
+  .nature-card-lg {
+    @apply p-8 rounded-[32px];
+  }
+
+  .nature-card-image {
+    @apply overflow-hidden p-0;
+  }
+
+  /* -------- Inputs -------- */
+  .nature-input {
+    @apply w-full rounded-2xl border border-sage-300 bg-white/50 px-4 py-3 text-forest-900 placeholder:text-forest-800/40 transition-all duration-200 outline-none;
+  }
+
+  .nature-input:focus {
+    @apply border-forest-500 ring-4 ring-forest-500/10 bg-white;
+  }
+
   /* -------- Buttons -------- */
   .btn-nature-primary {
     @apply flex items-center justify-center gap-2 rounded-xl font-bold transition-all duration-200 active:scale-[0.985];
-    background: #1A3A2E;
-    color: #FFFFFF;
-    box-shadow: 0 4px 12px rgba(26, 58, 46, 0.15);
+    background: #F4C430;
+    color: #0F2419;
+    box-shadow: 0 4px 12px rgba(244, 196, 48, 0.2);
   }
 
   .btn-nature-primary:hover {
     filter: brightness(1.1);
     transform: translateY(-1px);
-    box-shadow: 0 8px 20px rgba(26, 58, 46, 0.25);
+    box-shadow: 0 8px 20px rgba(244, 196, 48, 0.4);
+  }
+
+  .btn-nature-secondary {
+    @apply flex items-center justify-center gap-2 rounded-xl font-bold transition-all duration-200 active:scale-[0.985];
+    background: #FFFFFF;
+    color: #1A3A2E;
+    border: 1px solid #1A3A2E;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  .btn-nature-secondary:hover {
+    background: #F5F7F5;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  /* -------- Mobile Nav -------- */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    background: rgba(253, 252, 250, 0.9);
+    /* cream with opacity */
+    backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(168, 191, 168, 0.3);
+    /* sage border */
+  }
+
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
   }
 
   /* =========================
@@ -128,12 +214,10 @@ p {
     overflow: hidden;
     border-radius: 16px;
 
-    background: linear-gradient(
-      100deg,
-      rgba(168, 191, 168, 0.15) 40%,
-      rgba(168, 191, 168, 0.28) 50%,
-      rgba(168, 191, 168, 0.15) 60%
-    );
+    background: linear-gradient(100deg,
+        rgba(168, 191, 168, 0.15) 40%,
+        rgba(168, 191, 168, 0.28) 50%,
+        rgba(168, 191, 168, 0.15) 60%);
 
     background-size: 200% 100%;
     animation: skeleton-loading 1.6s ease-in-out infinite;
@@ -145,12 +229,10 @@ p {
     overflow: hidden;
     border-radius: 16px;
 
-    background: linear-gradient(
-      100deg,
-      rgba(255, 255, 255, 0.06) 40%,
-      rgba(255, 255, 255, 0.12) 50%,
-      rgba(255, 255, 255, 0.06) 60%
-    );
+    background: linear-gradient(100deg,
+        rgba(255, 255, 255, 0.06) 40%,
+        rgba(255, 255, 255, 0.12) 50%,
+        rgba(255, 255, 255, 0.06) 60%);
 
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);

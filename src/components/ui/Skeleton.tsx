@@ -199,3 +199,100 @@ export function AdminSkeleton() {
         </div>
     );
 }
+
+export function ReviewsSkeleton() {
+    return (
+        <div className="space-y-12">
+            {/* Header Skeleton */}
+            <Skeleton className="w-full h-[300px] rounded-[32px] mb-12" />
+
+            <div className="container-x mx-auto">
+                {/* Filters Skeleton */}
+                <div className="flex flex-col md:flex-row justify-between items-center mb-12 gap-6">
+                    <Skeleton className="h-12 w-48 rounded-xl" />
+                    <div className="flex gap-2">
+                        <Skeleton className="h-10 w-24 rounded-full" />
+                        <Skeleton className="h-10 w-24 rounded-full" />
+                        <Skeleton className="h-10 w-24 rounded-full" />
+                    </div>
+                </div>
+
+                {/* Grid Skeleton */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {Array.from({ length: 6 }).map((_, i) => (
+                        <div key={i} className="nature-card p-8 space-y-6">
+                            <div className="flex items-center gap-4 mb-6">
+                                <Skeleton className="w-12 h-12 rounded-2xl" />
+                                <div className="space-y-2">
+                                    <Skeleton className="h-4 w-32" />
+                                    <Skeleton className="h-3 w-24" />
+                                </div>
+                            </div>
+                            <div className="space-y-3">
+                                <Skeleton className="h-4 w-full" />
+                                <Skeleton className="h-4 w-full" />
+                                <Skeleton className="h-4 w-3/4" />
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export function ContactSkeleton() {
+    return (
+        <div className="space-y-12">
+            <Skeleton className="w-full h-[300px] rounded-[32px] mb-12" />
+
+            <div className="container-x mx-auto">
+                <div className="grid lg:grid-cols-2 gap-8 lg:gap-24">
+                    {/* Form Skeleton */}
+                    <div className="order-2 lg:order-1">
+                        <div className="nature-card p-8 h-[600px]" />
+                    </div>
+                    {/* Info Skeleton */}
+                    <div className="order-1 lg:order-2 space-y-8">
+                        <Skeleton className="h-16 w-3/4" />
+                        <div className="space-y-6">
+                            {Array.from({ length: 4 }).map((_, i) => (
+                                <Skeleton key={i} className="h-24 w-full rounded-2xl" />
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+export function AboutSkeleton() {
+    return (
+        <div className="space-y-12">
+            <Skeleton className="w-full h-[300px] rounded-[32px] mb-12" />
+
+            <div className="container-x mx-auto">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+                    <div className="lg:col-span-7 space-y-8">
+                        <Skeleton className="h-8 w-2/3" />
+                        <div className="space-y-4">
+                            <Skeleton className="h-4 w-full" />
+                            <Skeleton className="h-4 w-full" />
+                            <Skeleton className="h-4 w-11/12" />
+                            <Skeleton className="h-4 w-full" />
+                        </div>
+                        <Skeleton className="h-[400px] w-full rounded-[32px] mt-8" />
+                    </div>
+                    <div className="lg:col-span-5 space-y-6">
+                        <Skeleton className="h-[300px] w-full rounded-[32px]" />
+                        <div className="grid grid-cols-2 gap-6">
+                            <Skeleton className="h-[200px] rounded-[24px]" />
+                            <Skeleton className="h-[200px] rounded-[24px]" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+}

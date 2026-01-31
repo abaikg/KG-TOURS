@@ -20,12 +20,14 @@ export const useLanguage = create<LanguageState>()(
             setHasHydrated: (val) => set({ hasHydrated: val }),
             t: (ru, en) => {
                 // Always return RU on server or before hydration to match server render
-                if (!get().hasHydrated) return ru;
+                // This prevents hydration mismatch when localStorage has a different language
+                if (typeof window === 'undefined' || !get().hasHydrated) return ru;
                 return get().language === 'ru' ? ru : en;
             },
         }),
         {
             name: 'language-storage',
+            partialize: (state) => ({ language: state.language }),
             onRehydrateStorage: () => (state) => {
                 state?.setHasHydrated(true);
             },

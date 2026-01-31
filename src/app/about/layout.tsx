@@ -16,7 +16,7 @@ export default function AboutLayout({
     return (
         <>
             <Header />
-            <main className="min-h-screen pt-20">{children}</main>
+            <main>{children}</main>
             <Footer />
             <BottomNav />
         </>
